@@ -6,6 +6,8 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -70,6 +72,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void goToMap(View view){
+        Intent intent = new Intent(this, MapActivity.class);
+        startActivity(intent);
     }
 
 
