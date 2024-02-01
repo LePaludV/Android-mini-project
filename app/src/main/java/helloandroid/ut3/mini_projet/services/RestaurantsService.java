@@ -17,15 +17,17 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import helloandroid.ut3.mini_projet.models.Restaurant;
 
 public class RestaurantsService {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    public ArrayList<Restaurant> getAllRestaurants(){
+    public CompletableFuture<ArrayList<Restaurant>> getAllRestaurants(){
         ArrayList<Restaurant> resaurants =  new ArrayList<Restaurant>();
         System.out.println("go get");
+        CompletableFuture<ArrayList<Restaurant>> completableFuture = new CompletableFuture<>();
 
         db.collection("restaurants")
                 .get()
@@ -54,8 +56,9 @@ public class RestaurantsService {
                             System.out.println("ERROR " +task.getException());
 
                         }
+                        completableFuture.complete(resaurants);
                     }
                 });
-        return resaurants;
+        return completableFuture;
     }
 }
