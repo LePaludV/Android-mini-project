@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -32,13 +33,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         RestaurantsService r= new RestaurantsService();
         CompletableFuture<ArrayList<Restaurant>> a = r.getAllRestaurants();
         a.thenAccept((res)->{
             System.out.println(res);
-            setContentView(R.layout.activity_main);
         });
-
 
         setContentView(R.layout.activity_main);
 
@@ -70,6 +70,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+
+    // Méthode appelée lors du clic sur un item
+    public void onItemClick(View view) {
+        // Lancez une nouvelle activité ou effectuez toute autre action que vous souhaitez
+        //Intent intent = new Intent(this, test.class);
+        //startActivity(intent);
     }
 
 }

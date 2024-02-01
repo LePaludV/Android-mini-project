@@ -18,6 +18,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import helloandroid.ut3.mini_projet.models.Restaurant;
+import helloandroid.ut3.mini_projet.services.RestaurantsService;
 
 
 public class ListeRestaurants extends Fragment {
@@ -29,12 +33,30 @@ public class ListeRestaurants extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+
+
         View view = inflater.inflate(R.layout.fragment_liste_restaurants, container, false);
         restaurantListView = view.findViewById(R.id.listview);
         restaurantNames = new ArrayList<>();
         restaurantNames.add("Restaurant 1");
         restaurantNames.add("Restaurant 2");
         restaurantNames.add("Restaurant 3");
+        restaurantNames.add("Restaurant 1aaa");
+        restaurantNames.add("Restaurant 2aaa");
+        restaurantNames.add("Restaurant 3aaaa");
+        restaurantNames.add("Restaurant 1bbbb");
+        restaurantNames.add("Restaurant 2bbb");
+        restaurantNames.add("Restaurant 3bbbb");
+        restaurantNames.add("Restaurant 1cccc");
+        restaurantNames.add("Restaurant 2ccc");
+        restaurantNames.add("Restaurant 3cccc");
+        restaurantNames.add("Restaurant 1dddd");
+        restaurantNames.add("Restaurant 2ddd");
+        restaurantNames.add("Restaurant 3ddd");
+        restaurantNames.add("Restaurant 1eeee");
+        restaurantNames.add("Restaurant 2eee");
+        restaurantNames.add("Restaurant 3eeee");
+
 
         // Créez un adaptateur ArrayAdapter pour lier la liste à la ListView
         ArrayAdapter<String> adapter = new CustomAdapter(requireContext(), R.layout.item_layout, restaurantNames);
@@ -66,7 +88,6 @@ public class ListeRestaurants extends Fragment {
 
             // Récupérez les vues du layout personnalisé
             TextView textViewRestaurantName = view.findViewById(R.id.textViewRestaurantName);
-            Button buttonAction = view.findViewById(R.id.buttonAction);
 
             // Récupérez le nom du restaurant à partir de la liste
             String restaurantName = getItem(position);
