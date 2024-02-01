@@ -13,6 +13,13 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
+import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import helloandroid.ut3.mini_projet.models.Restaurant;
+import helloandroid.ut3.mini_projet.services.RestaurantsService;
+
 public class MainActivity extends AppCompatActivity {
 
     TabLayout tabLayout;
@@ -25,6 +32,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        RestaurantsService r= new RestaurantsService();
+        CompletableFuture<ArrayList<Restaurant>> a = r.getAllRestaurants();
+        a.thenAccept((res)->{
+            System.out.println(res);
+            setContentView(R.layout.activity_main);
+        });
+
+
         setContentView(R.layout.activity_main);
 
         tabLayout = findViewById(R.id.tab_layout);
@@ -54,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
                 tabLayout.getTabAt(position).select();
             }
         });
-
 
     }
 
