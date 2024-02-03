@@ -1,13 +1,14 @@
 package helloandroid.ut3.mini_projet;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -19,6 +20,10 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.infowindow.InfoWindow;
+import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 
 import java.util.ArrayList;
 
@@ -26,7 +31,6 @@ public class MapActivity extends AppCompatActivity {
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private MapView map = null;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,43 +49,31 @@ public class MapActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             String[] permission = new String[]{
                     Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.ACCESS_COARSE_LOCATION};
             requestPermissionsIfNecessary(permission);
         }
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        GeoPoint startPoint;
-        double zoom;
-        if (location != null) {
-            double latitude = location.getLatitude();
-            double longitude = location.getLongitude();
-            startPoint = new GeoPoint(latitude, longitude);
-            zoom=18;
-        } else {
-            startPoint = new GeoPoint(43.60, 1.43);
-            zoom=15;
-        }
-        mapController.setZoom(zoom);
+        GeoPoint startPoint = new GeoPoint(43.60, 1.43);
+        if (location != null) startPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+
+
+        mapController.setZoom(18.00);
         mapController.setCenter(startPoint);
+        generateMarker(map,startPoint);
 
     }
+
 
     @Override
     public void onResume() {
         super.onResume();
-        //this will refresh the osmdroid configuration on resuming.
-        //if you make changes to the configuration, use 
-        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        //Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
         map.onResume(); //needed for compass, my location overlays, v6.0.0 and up
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        //this will refresh the osmdroid configuration on resuming.
-        //if you make changes to the configuration, use 
-        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        //Configuration.getInstance().save(this, prefs);
         map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }
 
@@ -118,6 +110,18 @@ public class MapActivity extends AppCompatActivity {
     }
 
 
+    private void generateMarker(MapView map, GeoPoint startPoint) {
+        Marker userMarker = new Marker(map);
+        userMarker.setPosition(startPoint);
+        userMarker.setIcon(getDrawable(R.drawable.baseline_gps_fixed_24));
+
+        userMarker.setTitle("You are here");
+        userMarker.setInfoWindow(new CustomInfoWindow(R.layout.custom_info_window, map,false));
+        userMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
+        map.getOverlays().add(userMarker);
+
+
+    }
     //TODO zoom to location
 
     //TODO display marker: user

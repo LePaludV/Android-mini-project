@@ -1,0 +1,19 @@
+<!-- res/layout/custom_info_window.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/rounded_corners_background">
+
+    <TextView
+        android:id="@+id/info_window_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Info Window Content"
+        android:textSize="16sp"
+        android:textColor="#000000" />
+
+    <!-- Ajoutez d'autres vues selon vos besoins -->
+
+</LinearLayout>
