@@ -3,17 +3,30 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:padding="10dp"
     android:background="@drawable/rounded_corners_background">
 
     <TextView
-        android:id="@+id/info_window_text"
+        android:id="@+id/titre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Info Window Content"
-        android:textSize="16sp"
-        android:textColor="#000000" />
+        android:text="Voir le restaurant"
+        android:visibility="invisible" />
 
-    <!-- Ajoutez d'autres vues selon vos besoins -->
 
 </LinearLayout>

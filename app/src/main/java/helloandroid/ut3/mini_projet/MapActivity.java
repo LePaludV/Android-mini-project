@@ -26,6 +26,10 @@ import org.osmdroid.views.overlay.infowindow.InfoWindow;
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+
+import helloandroid.ut3.mini_projet.models.Restaurant;
+import helloandroid.ut3.mini_projet.services.RestaurantsService;
 
 public class MapActivity extends AppCompatActivity {
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
@@ -37,10 +41,8 @@ public class MapActivity extends AppCompatActivity {
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         setContentView(R.layout.map);
-
         map = (MapView) findViewById(R.id.osmmap);
         map.setTileSource(TileSourceFactory.MAPNIK);
-
         map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
         map.setMultiTouchControls(true);
         IMapController mapController = map.getController();
@@ -56,11 +58,10 @@ public class MapActivity extends AppCompatActivity {
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         GeoPoint startPoint = new GeoPoint(43.60, 1.43);
         if (location != null) startPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-
-
         mapController.setZoom(18.00);
         mapController.setCenter(startPoint);
         generateMarker(map,startPoint);
+
 
     }
 
@@ -111,20 +112,32 @@ public class MapActivity extends AppCompatActivity {
 
 
     private void generateMarker(MapView map, GeoPoint startPoint) {
+        //user
         Marker userMarker = new Marker(map);
         userMarker.setPosition(startPoint);
         userMarker.setIcon(getDrawable(R.drawable.baseline_gps_fixed_24));
-
-        userMarker.setTitle("You are here");
-        userMarker.setInfoWindow(new CustomInfoWindow(R.layout.custom_info_window, map,false));
+        userMarker.setInfoWindow(new CustomInfoWindow(R.layout.custom_info_window, map,null));
         userMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
         map.getOverlays().add(userMarker);
+        // restaurants
+        RestaurantsService r = new RestaurantsService();
 
+        CompletableFuture<ArrayList<Restaurant>> a = r.getAllRestaurants();
+        a.thenAccept((res)->{
+            res.forEach((restaurant)->{
+                System.out.println(restaurant.getCoordinates().toString());
+                Marker restaurantMarker = new Marker(map);
+                restaurantMarker.setPosition(restaurant.getCoordinates());
+                restaurantMarker.setIcon(getDrawable(R.drawable.restaurant_24));
+                restaurantMarker.setInfoWindow(new CustomInfoWindow(R.layout.custom_info_window, map,restaurant));
+                restaurantMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
+                map.getOverlays().add(restaurantMarker);
+            });
+
+        });
 
     }
-    //TODO zoom to location
 
-    //TODO display marker: user
 
     //TODO display restaurants
 }

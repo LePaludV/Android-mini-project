@@ -33,8 +33,8 @@ public class Restaurant {
         return photos;
     }
 
-    public GeoPoint getCoordinates() {
-        return coordinates;
+    public org.osmdroid.util.GeoPoint getCoordinates() {
+        return new org.osmdroid.util.GeoPoint(coordinates.getLatitude(),coordinates.getLongitude());
     }
 
     public String getDescription() {
