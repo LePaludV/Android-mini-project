@@ -19,6 +19,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import helloandroid.ut3.mini_projet.models.Restaurant;
 import helloandroid.ut3.mini_projet.services.RestaurantsService;
@@ -38,31 +39,21 @@ public class ListeRestaurants extends Fragment {
         View view = inflater.inflate(R.layout.fragment_liste_restaurants, container, false);
         restaurantListView = view.findViewById(R.id.listview);
         restaurantNames = new ArrayList<>();
-        restaurantNames.add("Restaurant 1");
-        restaurantNames.add("Restaurant 2");
-        restaurantNames.add("Restaurant 3");
-        restaurantNames.add("Restaurant 1aaa");
-        restaurantNames.add("Restaurant 2aaa");
-        restaurantNames.add("Restaurant 3aaaa");
-        restaurantNames.add("Restaurant 1bbbb");
-        restaurantNames.add("Restaurant 2bbb");
-        restaurantNames.add("Restaurant 3bbbb");
-        restaurantNames.add("Restaurant 1cccc");
-        restaurantNames.add("Restaurant 2ccc");
-        restaurantNames.add("Restaurant 3cccc");
-        restaurantNames.add("Restaurant 1dddd");
-        restaurantNames.add("Restaurant 2ddd");
-        restaurantNames.add("Restaurant 3ddd");
-        restaurantNames.add("Restaurant 1eeee");
-        restaurantNames.add("Restaurant 2eee");
-        restaurantNames.add("Restaurant 3eeee");
+        RestaurantsService r = new RestaurantsService();
+        CompletableFuture<ArrayList<Restaurant>> a = r.getAllRestaurants();
+        a.thenAccept((res)->{
+            res.forEach((restaurant)->{
+                System.out.println(restaurant.getCoordinates().toString());
+                restaurantNames.add(restaurant.getNom());
+            });
+            // Créez un adaptateur ArrayAdapter pour lier la liste à la ListView
+            ArrayAdapter<String> adapter = new CustomAdapter(requireContext(), R.layout.item_layout, restaurantNames);
+            // Liez l'adaptateur à la ListView
+            restaurantListView.setAdapter(adapter);
+        });
 
 
-        // Créez un adaptateur ArrayAdapter pour lier la liste à la ListView
-        ArrayAdapter<String> adapter = new CustomAdapter(requireContext(), R.layout.item_layout, restaurantNames);
 
-        // Liez l'adaptateur à la ListView
-        restaurantListView.setAdapter(adapter);
 
         // Inflate the layout for this fragment
         return view;
