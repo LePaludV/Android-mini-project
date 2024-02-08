@@ -2,6 +2,7 @@ package helloandroid.ut3.mini_projet;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -50,6 +52,18 @@ public class ListeRestaurants extends Fragment {
             ArrayAdapter<String> adapter = new CustomAdapter(requireContext(), R.layout.item_layout, restaurantNames);
             // Liez l'adaptateur à la ListView
             restaurantListView.setAdapter(adapter);
+            restaurantListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    // Récupérez l'élément cliqué
+                    String selectedRestaurant = restaurantNames.get(position);
+
+                    // Ouvrez une autre activité en fonction de l'élément choisi
+                    Intent intent = new Intent(requireContext(), test.class);
+                    intent.putExtra("restaurantName", selectedRestaurant); // Transférez des données à l'autre activité si nécessaire
+                    startActivity(intent);
+                }
+            });
         });
 
 
@@ -86,7 +100,16 @@ public class ListeRestaurants extends Fragment {
             // Configurez les vues avec les données appropriées
             textViewRestaurantName.setText(restaurantName);
 
-            // Ajoutez le code pour le bouton (si nécessaire)
+            // Ajoutez un écouteur de clic sur l'élément de la liste
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Ouvrez une autre activité en fonction de l'élément choisi
+                    Intent intent = new Intent(context, test.class);
+                    intent.putExtra("restaurantName", restaurantName); // Transférez des données à l'autre activité si nécessaire
+                    context.startActivity(intent);
+                }
+            });
 
             return view;
         }
