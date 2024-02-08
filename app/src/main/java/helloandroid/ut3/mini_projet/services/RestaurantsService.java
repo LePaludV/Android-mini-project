@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -59,6 +60,45 @@ public class RestaurantsService {
                         completableFuture.complete(resaurants);
                     }
                 });
+        return completableFuture;
+    }
+
+    public CompletableFuture<Restaurant> getRestaurantById(String restaurantId) {
+        CompletableFuture<Restaurant> completableFuture = new CompletableFuture<>();
+
+        db.collection("restaurants")
+                .document(restaurantId)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Map<String, Object> data = document.getData();
+                                String id = document.getId();
+                                String nom = data.get("nom").toString();
+                                String address = data.get("address").toString();
+                                String horaire = data.get("horaire").toString();
+                                float note = Float.parseFloat(data.get("note_moyenne").toString());
+                                String description = data.get("description").toString();
+                                String type = data.get("type").toString();
+                                String photoString = data.get("photos").toString();
+                                String[] photos = photoString.substring(1, photoString.length() - 1).split(",");
+                                GeoPoint coordinates = (GeoPoint) document.getData().get("coordinate");
+                                Restaurant restaurant = new Restaurant(id, nom, address, photos, coordinates, description, horaire, type, note);
+                                completableFuture.complete(restaurant);
+                            } else {
+                                // Restaurant with the provided ID does not exist
+                                completableFuture.completeExceptionally(new IllegalArgumentException("No restaurant found with ID: " + restaurantId));
+                            }
+                        } else {
+                            // Error retrieving document
+                            completableFuture.completeExceptionally(task.getException());
+                        }
+                    }
+                });
+
         return completableFuture;
     }
 }

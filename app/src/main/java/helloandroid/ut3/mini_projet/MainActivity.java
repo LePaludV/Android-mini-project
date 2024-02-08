@@ -20,12 +20,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        RestaurantsService r= new RestaurantsService();
-        CompletableFuture<ArrayList<Restaurant>> a = r.getAllRestaurants();
-        a.thenAccept((res)->{
-            System.out.println(res);
-            setContentView(R.layout.activity_main);
-        });
+        setContentView(R.layout.activity_main);
 
     }
 
