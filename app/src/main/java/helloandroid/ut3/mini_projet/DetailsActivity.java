@@ -28,14 +28,14 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         int id = getIntent().getIntExtra("id", -1);
 
-        RestaurantsService r= new RestaurantsService();
+        RestaurantsService r = new RestaurantsService();
 
         setContentView(R.layout.activity_details);
 
         TextView title = findViewById(R.id.restaurantName);
         ImageView image = findViewById(R.id.restaurantImage);
 
-        (r.getRestaurantById("FR2Tv4XMxkGK5rDCbAAx")).whenComplete((res,error) -> {
+        (r.getRestaurantById("FR2Tv4XMxkGK5rDCbAAx")).whenComplete((res, error) -> {
             if (error != null) {
                 System.out.println("Exception occurred");
             } else {
@@ -43,21 +43,12 @@ public class DetailsActivity extends AppCompatActivity {
                 title.setText(res.getNom());
                 ImageView img = findViewById(R.id.restaurantImage);
                 StorageReference storageRef = (FirebaseStorage.getInstance()).getReference();
+
                 StorageReference pathReference = storageRef.child(res.getPhotos()[0]);
-
-                image.setImageURI(Uri.parse(pathReference.toString()));
-                //StorageReference gsReference = storage.getReferenceFromUrl("gs://bucket/images/stars.jpg");
-
-                // Utilisez Glide pour charger et afficher l'image dans l'ImageView
-                Glide.with(this).load(storageRef).into(img);
+                Glide.with(this.getApplicationContext())
+                        .load(pathReference)
+                        .into(img);
             }
         });
-
-
-        //TODO get restaurant infos with id
-    }
-
-    public void onClickReserver(View view) {
-        //TODO change activity
     }
 }
