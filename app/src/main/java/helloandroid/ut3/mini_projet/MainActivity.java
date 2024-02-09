@@ -83,8 +83,8 @@ public class MainActivity extends AppCompatActivity {
     // Méthode appelée lors du clic sur un item
     public void onItemClick(View view) {
         // Lancez une nouvelle activité ou effectuez toute autre action que vous souhaitez
-        //Intent intent = new Intent(this, test.class);
-        //startActivity(intent);
+        Intent intent = new Intent(this, test.class);
+        startActivity(intent);
     }
 
 }
