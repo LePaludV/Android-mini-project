@@ -6,6 +6,7 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,11 +18,9 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int id = getIntent().getIntExtra("id", -1);
-
-        RestaurantsService r = new RestaurantsService();
-
         setContentView(R.layout.activity_details);
+
+        Intent intent = getIntent();
 
         TextView title = findViewById(R.id.restaurantName);
         TextView type = findViewById(R.id.restaurantType);
@@ -30,7 +29,14 @@ public class DetailsActivity extends AppCompatActivity {
         TextView horaire= findViewById(R.id.restaurantHoraire);
         ImageView image = findViewById(R.id.restaurantImage);
 
-        (r.getRestaurantById("FR2Tv4XMxkGK5rDCbAAx")).whenComplete((res, error) -> {
+        title.setText(intent.getStringExtra("Titre"));
+        type.setText(intent.getStringExtra("Type"));
+        desc.setText(intent.getStringExtra("Description"));
+        address.setText(intent.getStringExtra("Adresse"));
+        horaire.setText(intent.getStringExtra("Horaire"));
+        //image.setText(intent.getStringExtra("Image"));
+
+       /* (r.getRestaurantById("FR2Tv4XMxkGK5rDCbAAx")).whenComplete((res, error) -> {
             if (error != null) {
                 System.out.println("Exception occurred");
             } else {
@@ -47,6 +53,6 @@ public class DetailsActivity extends AppCompatActivity {
                         .load(pathReference)
                         .into(image);
             }
-        });
+        });*/
     }
 }

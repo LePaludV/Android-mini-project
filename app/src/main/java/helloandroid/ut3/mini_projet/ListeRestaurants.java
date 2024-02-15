@@ -14,14 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import helloandroid.ut3.mini_projet.models.Restaurant;
 import helloandroid.ut3.mini_projet.services.RestaurantsService;
@@ -30,54 +28,32 @@ import helloandroid.ut3.mini_projet.services.RestaurantsService;
 public class ListeRestaurants extends Fragment {
 
     ListView restaurantListView;
-    List<String> restaurantNames;
+    List<Restaurant> restaurants;
 
     @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-
-
         View view = inflater.inflate(R.layout.fragment_liste_restaurants, container, false);
         restaurantListView = view.findViewById(R.id.listview);
-        restaurantNames = new ArrayList<>();
+        restaurants = new ArrayList<>();
+
         RestaurantsService r = new RestaurantsService();
         CompletableFuture<ArrayList<Restaurant>> a = r.getAllRestaurants();
         a.thenAccept((res)->{
-            res.forEach((restaurant)->{
-                System.out.println(restaurant.getCoordinates().toString());
-                restaurantNames.add(restaurant.getNom());
-            });
+            restaurants.addAll(res);
             // Créez un adaptateur ArrayAdapter pour lier la liste à la ListView
-            ArrayAdapter<String> adapter = new CustomAdapter(requireContext(), R.layout.item_layout, restaurantNames);
-            // Liez l'adaptateur à la ListView
+            RestaurantAdapter adapter = new RestaurantAdapter(requireContext(), R.layout.item_layout, restaurants);
             restaurantListView.setAdapter(adapter);
-            restaurantListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    // Récupérez l'élément cliqué
-                    String selectedRestaurant = restaurantNames.get(position);
-
-                    // Ouvrez une autre activité en fonction de l'élément choisi
-                    Intent intent = new Intent(requireContext(), test.class);
-                    intent.putExtra("restaurantName", selectedRestaurant); // Transférez des données à l'autre activité si nécessaire
-                    startActivity(intent);
-                }
-            });
         });
 
-
-
-
-        // Inflate the layout for this fragment
         return view;
     }
 
-    private class CustomAdapter extends ArrayAdapter<String> {
+    private class RestaurantAdapter extends ArrayAdapter<Restaurant> {
         private Context context;
         private int resource;
 
-        public CustomAdapter(Context context, int resource, List<String> objects) {
+        public RestaurantAdapter(Context context, int resource, List<Restaurant> objects) {
             super(context, resource, objects);
             this.context = context;
             this.resource = resource;
@@ -87,26 +63,29 @@ public class ListeRestaurants extends Fragment {
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(context);
-
-            // Utilisez le layout personnalisé pour chaque élément de la liste
             View view = inflater.inflate(resource, parent, false);
 
-            // Récupérez les vues du layout personnalisé
+            Restaurant restaurant = getItem(position);
+
             TextView textViewRestaurantName = view.findViewById(R.id.textViewRestaurantName);
 
-            // Récupérez le nom du restaurant à partir de la liste
-            String restaurantName = getItem(position);
+            textViewRestaurantName.setText(restaurant.getNom());
 
-            // Configurez les vues avec les données appropriées
-            textViewRestaurantName.setText(restaurantName);
-
-            // Ajoutez un écouteur de clic sur l'élément de la liste
+            view.setTag(position);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // Ouvrez une autre activité en fonction de l'élément choisi
-                    Intent intent = new Intent(context, test.class);
-                    intent.putExtra("restaurantName", restaurantName); // Transférez des données à l'autre activité si nécessaire
+                    int position = (int) v.getTag();
+                    Restaurant selectedRestaurant = getItem(position);
+
+                    Intent intent = new Intent(context, DetailsActivity.class);
+                    intent.putExtra("Titre", selectedRestaurant.getNom());
+                    intent.putExtra("Type", selectedRestaurant.getType());
+                    intent.putExtra("Description", selectedRestaurant.getDescription());
+                    intent.putExtra("Adresse", selectedRestaurant.getAddress());
+                    intent.putExtra("Horaire", selectedRestaurant.getHoraire());
+                    //intent.putExtra("Image", restaurant.getImage());
+
                     context.startActivity(intent);
                 }
             });
@@ -114,5 +93,5 @@ public class ListeRestaurants extends Fragment {
             return view;
         }
     }
-
 }
+
