@@ -6,19 +6,10 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.concurrent.CompletableFuture;
-
-import helloandroid.ut3.mini_projet.models.Restaurant;
 import helloandroid.ut3.mini_projet.services.RestaurantsService;
 
 public class DetailsActivity extends AppCompatActivity {
@@ -33,6 +24,10 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
 
         TextView title = findViewById(R.id.restaurantName);
+        TextView type = findViewById(R.id.restaurantType);
+        TextView desc = findViewById(R.id.restaurantDescription);
+        TextView address = findViewById(R.id.restaurantAddress);
+        TextView horaire= findViewById(R.id.restaurantHoraire);
         ImageView image = findViewById(R.id.restaurantImage);
 
         (r.getRestaurantById("FR2Tv4XMxkGK5rDCbAAx")).whenComplete((res, error) -> {
@@ -41,13 +36,16 @@ public class DetailsActivity extends AppCompatActivity {
             } else {
                 System.out.println(res);
                 title.setText(res.getNom());
-                ImageView img = findViewById(R.id.restaurantImage);
+                type.setText(res.getType());
+                desc.setText(res.getDescription());
+                address.setText(res.getAddress());
+                horaire.setText(res.getHoraire());
                 StorageReference storageRef = (FirebaseStorage.getInstance()).getReference();
 
                 StorageReference pathReference = storageRef.child(res.getPhotos()[0]);
                 Glide.with(this.getApplicationContext())
                         .load(pathReference)
-                        .into(img);
+                        .into(image);
             }
         });
     }

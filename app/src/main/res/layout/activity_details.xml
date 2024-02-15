@@ -57,18 +57,18 @@
         app:layout_constraintTop_toBottomOf="@+id/restaurantName" />
 
     <TextView
-        android:id="@+id/restaurantAdress"
+        android:id="@+id/restaurantAddress"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:text="restaurantAdress"
+        android:text="restaurantAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/restaurantDescription" />
 
     <TextView
-        android:id="@+id/restaurantHauraire"
+        android:id="@+id/restaurantHoraire"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -77,7 +77,7 @@
         android:text="restaurantHoraire"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/restaurantAdress" />
+        app:layout_constraintTop_toBottomOf="@+id/restaurantAddress" />
 
     <Button
         android:id="@+id/reservationButton"
