@@ -8,11 +8,15 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -31,27 +35,29 @@ import java.util.concurrent.CompletableFuture;
 import helloandroid.ut3.mini_projet.models.Restaurant;
 import helloandroid.ut3.mini_projet.services.RestaurantsService;
 
-public class MapActivity extends AppCompatActivity {
+public class MapActivity extends Fragment {
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
+
     private MapView map = null;
 
+    private Context ctx = null;
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Context ctx = getApplicationContext();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.map, container, false);
+        ctx = getContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-        setContentView(R.layout.map);
-        map = (MapView) findViewById(R.id.osmmap);
+        map = (MapView) view.findViewById(R.id.osmmap);
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
         map.setMultiTouchControls(true);
         IMapController mapController = map.getController();
-
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        LocationManager locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(ctx, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             String[] permission = new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.ACCESS_COARSE_LOCATION};
             requestPermissionsIfNecessary(permission);
         }
@@ -62,7 +68,7 @@ public class MapActivity extends AppCompatActivity {
         mapController.setCenter(startPoint);
         generateMarker(map,startPoint);
 
-
+        return view;
     }
 
 
@@ -87,7 +93,7 @@ public class MapActivity extends AppCompatActivity {
         }
         if (permissionsToRequest.size() > 0) {
             ActivityCompat.requestPermissions(
-                    this,
+                    this.getActivity(),
                     permissionsToRequest.toArray(new String[0]),
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
@@ -96,7 +102,7 @@ public class MapActivity extends AppCompatActivity {
     private void requestPermissionsIfNecessary(String[] permissions) {
         ArrayList<String> permissionsToRequest = new ArrayList<>();
         for (String permission : permissions) {
-            if (ContextCompat.checkSelfPermission(this, permission)
+            if (ContextCompat.checkSelfPermission(ctx, permission)
                     != PackageManager.PERMISSION_GRANTED) {
                 // Permission is not granted
                 permissionsToRequest.add(permission);
@@ -104,7 +110,7 @@ public class MapActivity extends AppCompatActivity {
         }
         if (permissionsToRequest.size() > 0) {
             ActivityCompat.requestPermissions(
-                    this,
+                    this.getActivity(),
                     permissionsToRequest.toArray(new String[0]),
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
@@ -115,7 +121,7 @@ public class MapActivity extends AppCompatActivity {
         //user
         Marker userMarker = new Marker(map);
         userMarker.setPosition(startPoint);
-        userMarker.setIcon(getDrawable(R.drawable.baseline_gps_fixed_24));
+        userMarker.setIcon( ctx.getDrawable(R.drawable.baseline_gps_fixed_24));
         userMarker.setInfoWindow(new CustomInfoWindow(R.layout.custom_info_window, map,null));
         userMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
         map.getOverlays().add(userMarker);
@@ -128,7 +134,7 @@ public class MapActivity extends AppCompatActivity {
                 System.out.println(restaurant.getCoordinates().toString());
                 Marker restaurantMarker = new Marker(map);
                 restaurantMarker.setPosition(restaurant.getCoordinates());
-                restaurantMarker.setIcon(getDrawable(R.drawable.restaurant_24));
+                restaurantMarker.setIcon(ctx.getDrawable(R.drawable.restaurant_24));
                 restaurantMarker.setInfoWindow(new CustomInfoWindow(R.layout.custom_info_window, map,restaurant));
                 restaurantMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
                 map.getOverlays().add(restaurantMarker);
@@ -137,7 +143,4 @@ public class MapActivity extends AppCompatActivity {
         });
 
     }
-
-
-    //TODO display restaurants
 }
