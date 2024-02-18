@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -41,63 +42,90 @@ public class MapActivity extends Fragment {
     private MapView map = null;
 
     private Context ctx = null;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.map, container, false);
-        ctx = getContext();
-        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-        map = (MapView) view.findViewById(R.id.osmmap);
+        var view = inflater.inflate(R.layout.map, container, false);
+        map = view.findViewById(R.id.osmmap);
         map.setTileSource(TileSourceFactory.MAPNIK);
-        map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
-        map.setMultiTouchControls(true);
+        return view;
+    }
+
+    private boolean hasLocationPermissions() {
+        return ContextCompat.checkSelfPermission(requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestLocationPermissions() {
+        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
+    }
+    private void configureMap() {
+        // Initialize map components here, considering the location permissions are granted
         IMapController mapController = map.getController();
         LocationManager locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(ctx, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            String[] permission = new String[]{
-                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.ACCESS_COARSE_LOCATION};
-            requestPermissionsIfNecessary(permission);
+
+        if (ActivityCompat.checkSelfPermission(ctx, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(ctx, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Handle the situation where permissions are not granted.
+            return;
         }
+
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         GeoPoint startPoint = new GeoPoint(43.60, 1.43);
-        if (location != null) startPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+
+        if (location != null) {
+            startPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+        }
         mapController.setZoom(18.00);
         mapController.setCenter(startPoint);
-        generateMarker(map,startPoint);
+        generateMarker(map, startPoint);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, configure the map
+                configureMap();
+            } else {
+                // Permission denied, handle accordingly (e.g., show a message or disable location-related features)
+            }
+        }
+    }
+    @Override
+    public void onViewCreated(View view,Bundle savedInstanceState){
 
-        return view;
+        map = (MapView) getView().findViewById(R.id.osmmap);
+        map.setTileSource(TileSourceFactory.MAPNIK);
+        ctx = getContext();
+        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
+        Configuration.getInstance().setUserAgentValue(ctx.getPackageName());
+        map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
+        map.setMultiTouchControls(true);
+        if (hasLocationPermissions()) {
+            configureMap();
+        } else {
+            requestLocationPermissions();
+        }
     }
 
 
     @Override
     public void onResume() {
+        System.out.println("resuming");
         super.onResume();
-        map.onResume(); //needed for compass, my location overlays, v6.0.0 and up
+        map.onResume();
     }
 
     @Override
     public void onPause() {
+        System.out.println("pausing");
         super.onPause();
-        map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
+        map.onPause();
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        ArrayList<String> permissionsToRequest = new ArrayList<>();
-        for (int i = 0; i < grantResults.length; i++) {
-            permissionsToRequest.add(permissions[i]);
-        }
-        if (permissionsToRequest.size() > 0) {
-            ActivityCompat.requestPermissions(
-                    this.getActivity(),
-                    permissionsToRequest.toArray(new String[0]),
-                    REQUEST_PERMISSIONS_REQUEST_CODE);
-        }
-    }
+
+
 
     private void requestPermissionsIfNecessary(String[] permissions) {
         ArrayList<String> permissionsToRequest = new ArrayList<>();
