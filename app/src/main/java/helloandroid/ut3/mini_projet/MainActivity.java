@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+      
         RestaurantsService r= new RestaurantsService();
         CompletableFuture<ArrayList<Restaurant>> a = r.getAllRestaurants();
         a.thenAccept((res)->{
@@ -84,9 +84,9 @@ public class MainActivity extends AppCompatActivity {
 
     // Méthode appelée lors du clic sur un item
     public void onItemClick(View view) {
-        // Lancez une nouvelle activité ou effectuez toute autre action que vous souhaitez
-        Intent intent = new Intent(this, test.class);
+
+        Intent intent = new Intent(getApplicationContext(), DetailsActivity.class);
+        intent.putExtra("id", 1); //TODO return real id
         startActivity(intent);
     }
-
 }

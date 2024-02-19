@@ -33,6 +33,7 @@ android {
 }
 
 dependencies {
+    annotationProcessor("com.github.bumptech.glide:compiler:4.14.2")
 
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
@@ -45,6 +46,12 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
+    implementation("com.google.firebase:firebase-storage:20.3.0")
+
+    implementation("com.firebaseui:firebase-ui-storage:7.2.0")
+
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
     // https://firebase.google.com/docs/android/setup#available-libraries
