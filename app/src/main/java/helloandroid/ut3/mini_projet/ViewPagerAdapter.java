@@ -8,7 +8,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 public class ViewPagerAdapter extends FragmentStateAdapter {
 
     public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
-        super(fragmentActivity);
+                super(fragmentActivity);
     }
 
     @NonNull
@@ -16,7 +16,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0: return new ListeRestaurants();
-            case 1 : return new Carte();
+            case 1 : return new MapActivity();
             default: return new ListeRestaurants();
         }
     }
