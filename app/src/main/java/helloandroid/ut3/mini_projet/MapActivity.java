@@ -38,11 +38,13 @@ import helloandroid.ut3.mini_projet.services.RestaurantsService;
 
 public class MapActivity extends Fragment {
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
-
     private MapView map = null;
-
     private Context ctx = null;
+    private RestaurantsService rs;
 
+    public MapActivity(RestaurantsService rs){
+        this.rs = rs;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -150,7 +152,7 @@ public class MapActivity extends Fragment {
         Marker userMarker = new Marker(map);
         userMarker.setPosition(startPoint);
         userMarker.setIcon( ctx.getDrawable(R.drawable.baseline_gps_fixed_24));
-        userMarker.setInfoWindow(new CustomInfoWindow(R.layout.custom_info_window, map,null));
+        userMarker.setInfoWindow(new CustomInfoWindow(R.layout.custom_info_window, map,null,rs));
         userMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
         map.getOverlays().add(userMarker);
         // restaurants
@@ -163,7 +165,7 @@ public class MapActivity extends Fragment {
                 Marker restaurantMarker = new Marker(map);
                 restaurantMarker.setPosition(restaurant.getCoordinates());
                 restaurantMarker.setIcon(ctx.getDrawable(R.drawable.restaurant_24));
-                restaurantMarker.setInfoWindow(new CustomInfoWindow(R.layout.custom_info_window, map,restaurant));
+                restaurantMarker.setInfoWindow(new CustomInfoWindow(R.layout.custom_info_window, map,restaurant,rs));
                 restaurantMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
                 map.getOverlays().add(restaurantMarker);
             });

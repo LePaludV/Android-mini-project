@@ -3,6 +3,8 @@ package helloandroid.ut3.mini_projet.services;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import helloandroid.ut3.mini_projet.DetailsActivity;
 import helloandroid.ut3.mini_projet.models.Restaurant;
 
 public class RestaurantsService {
@@ -27,7 +30,6 @@ public class RestaurantsService {
 
     public CompletableFuture<ArrayList<Restaurant>> getAllRestaurants(){
         ArrayList<Restaurant> resaurants =  new ArrayList<Restaurant>();
-        System.out.println("go get");
         CompletableFuture<ArrayList<Restaurant>> completableFuture = new CompletableFuture<>();
 
         db.collection("restaurants")
@@ -100,5 +102,16 @@ public class RestaurantsService {
                 });
 
         return completableFuture;
+    }
+
+    public Intent goToDetails(Context ctx, Restaurant r){
+        Intent intent = new Intent(ctx, DetailsActivity.class);
+        intent.putExtra("Titre", r.getNom());
+        intent.putExtra("Type", r.getType());
+        intent.putExtra("Description", r.getDescription());
+        intent.putExtra("Adresse", r.getAddress());
+        intent.putExtra("Horaire", r.getHoraire());
+        intent.putExtra("Photos", r.getPhotos());
+        return intent;
     }
 }

@@ -27,8 +27,13 @@ import helloandroid.ut3.mini_projet.services.RestaurantsService;
 
 public class ListeRestaurants extends Fragment {
 
+    RestaurantsService rs;
     ListView restaurantListView;
     List<Restaurant> restaurants;
+
+    public ListeRestaurants(RestaurantsService rs){
+        this.rs=rs;
+    }
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -37,12 +42,11 @@ public class ListeRestaurants extends Fragment {
         restaurantListView = view.findViewById(R.id.listview);
         restaurants = new ArrayList<>();
 
-        RestaurantsService r = new RestaurantsService();
-        CompletableFuture<ArrayList<Restaurant>> a = r.getAllRestaurants();
+        CompletableFuture<ArrayList<Restaurant>> a = this.rs.getAllRestaurants();
         a.thenAccept((res)->{
             restaurants.addAll(res);
             // Créez un adaptateur ArrayAdapter pour lier la liste à la ListView
-            RestaurantAdapter adapter = new RestaurantAdapter(requireContext(), R.layout.item_layout, restaurants);
+            RestaurantAdapter adapter = new RestaurantAdapter(requireContext(), R.layout.item_layout, restaurants,this.rs);
             restaurantListView.setAdapter(adapter);
         });
 
@@ -51,12 +55,14 @@ public class ListeRestaurants extends Fragment {
 
     private class RestaurantAdapter extends ArrayAdapter<Restaurant> {
         private Context context;
+        RestaurantsService rs;
         private int resource;
 
-        public RestaurantAdapter(Context context, int resource, List<Restaurant> objects) {
+        public RestaurantAdapter(Context context, int resource, List<Restaurant> objects, RestaurantsService rs) {
             super(context, resource, objects);
             this.context = context;
             this.resource = resource;
+            this.rs=rs;
         }
 
         @NonNull
@@ -64,29 +70,16 @@ public class ListeRestaurants extends Fragment {
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(context);
             View view = inflater.inflate(resource, parent, false);
-
             Restaurant restaurant = getItem(position);
-
             TextView textViewRestaurantName = view.findViewById(R.id.textViewRestaurantName);
-
             textViewRestaurantName.setText(restaurant.getNom());
-
             view.setTag(position);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int position = (int) v.getTag();
                     Restaurant selectedRestaurant = getItem(position);
-
-                    Intent intent = new Intent(context, DetailsActivity.class);
-                    intent.putExtra("Titre", selectedRestaurant.getNom());
-                    intent.putExtra("Type", selectedRestaurant.getType());
-                    intent.putExtra("Description", selectedRestaurant.getDescription());
-                    intent.putExtra("Adresse", selectedRestaurant.getAddress());
-                    intent.putExtra("Horaire", selectedRestaurant.getHoraire());
-                    //intent.putExtra("Image", restaurant.getImage());
-
-                    context.startActivity(intent);
+                    context.startActivity(rs.goToDetails(context,selectedRestaurant));
                 }
             });
 
