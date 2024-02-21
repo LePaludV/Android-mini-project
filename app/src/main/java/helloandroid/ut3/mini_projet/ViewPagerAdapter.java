@@ -5,19 +5,25 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import helloandroid.ut3.mini_projet.services.RestaurantsService;
+
 public class ViewPagerAdapter extends FragmentStateAdapter {
 
-    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
+    private RestaurantsService rs;
+
+    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, RestaurantsService rs) {
                 super(fragmentActivity);
+                this.rs = rs;
     }
+
+
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
         switch (position) {
-            case 0: return new ListeRestaurants();
-            case 1 : return new MapActivity();
-            default: return new ListeRestaurants();
+            case 1 : return new MapActivity(this.rs);
+            default: return new ListeRestaurants(this.rs);
         }
     }
 

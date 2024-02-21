@@ -30,24 +30,13 @@ public class MainActivity extends AppCompatActivity {
     ViewPager2 viewPager2;
     ViewPagerAdapter viewPagerAdapter;
 
-    private ListView restaurantListView;
-    private ArrayList<String> restaurantNames;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-      
-        RestaurantsService r= new RestaurantsService();
-        CompletableFuture<ArrayList<Restaurant>> a = r.getAllRestaurants();
-        a.thenAccept((res)->{
-            System.out.println(res);
-        });
-
         setContentView(R.layout.activity_main);
-
         tabLayout = findViewById(R.id.tab_layout);
         viewPager2 = findViewById(R.id.view_pager2);
-        viewPagerAdapter = new ViewPagerAdapter(this);
+        viewPagerAdapter = new ViewPagerAdapter(this,new RestaurantsService());
         viewPager2.setOffscreenPageLimit(2);
         viewPager2.setAdapter(viewPagerAdapter);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -74,19 +63,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    public void goToMap(View view){
-        Intent intent = new Intent(this, MapActivity.class);
-        startActivity(intent);
-    }
-
-
-    // Méthode appelée lors du clic sur un item
-    public void onItemClick(View view) {
-
-        Intent intent = new Intent(getApplicationContext(), DetailsActivity.class);
-        intent.putExtra("id", 1); //TODO return real id
-        startActivity(intent);
     }
 }
