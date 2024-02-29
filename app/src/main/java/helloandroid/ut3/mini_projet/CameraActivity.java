@@ -3,8 +3,15 @@ package helloandroid.ut3.mini_projet;
 
 import android.Manifest;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.icu.text.SimpleDateFormat;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.video.Recorder;
@@ -32,6 +40,8 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -82,51 +92,39 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     public void takePhoto() {
-        // Get a stable reference of the modifiable image capture use case
+        System.out.println("ON PREND LA HPOTO");
         ImageCapture imageCapture = this.imageCapture;
         if (imageCapture == null) {
+            Log.e(TAG, "Image capture is null");
             return;
         }
 
-        // Create time stamped name and MediaStore entry.
-        String name = new SimpleDateFormat(FILENAME_FORMAT, Locale.FRANCE)
-                .format(System.currentTimeMillis());
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
-        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-            contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image");
-        }
-
-        // Create output options object which contains file + metadata
-        ImageCapture.OutputFileOptions outputOptions = new ImageCapture.OutputFileOptions.Builder(
-                getContentResolver(),
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues)
-                .build();
-
         // Set up image capture listener, which is triggered after photo has been taken
-        imageCapture.takePicture(
-                outputOptions,
-                ContextCompat.getMainExecutor(this),
-                new ImageCapture.OnImageSavedCallback() {
+        imageCapture.takePicture(ContextCompat.getMainExecutor(this), new ImageCapture.OnImageCapturedCallback() {
                     @Override
-                    public void onError(@NonNull ImageCaptureException exc) {
-                        Log.e(TAG, "Photo capture failed: " + exc.getMessage(), exc);
+                    public void onCaptureSuccess(@NonNull ImageProxy image) {
+                        super.onCaptureSuccess(image);
+                        // Convertir l'objet ImageProxy en Bitmap
+                        Bitmap bitmap = toBitmap(image);
+                        // Créer un Intent pour démarrer DisplayImageActivity
+                        Intent intent = new Intent(CameraActivity.this, DisplayImageActivity.class);
+                        // Transmettre le Bitmap à DisplayImageActivity
+                        intent.putExtra("imageBitmap", bitmap);
+                        startActivity(intent);
+                        // Fermer l'objet ImageProxy
+                        image.close();
                     }
 
                     @Override
-                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults output) {
-                        String msg = "Photo capture succeeded: " + output.getSavedUri();
-                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, msg);
+                    public void onError(@NonNull ImageCaptureException exception) {
+                        super.onError(exception);
+                        Log.e(TAG, "Photo capture failed: " + exception.getMessage(), exception);
                     }
-                }
-        );
+                });
     }
 
-    private void captureVideo() {
-    }
+
+
 
     private boolean allPermissionsGranted() {
         for (String permission : REQUIRED_PERMISSIONS) {
@@ -180,6 +178,8 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void bindPreview(ProcessCameraProvider cameraProvider) {
+        imageCapture = new ImageCapture.Builder().build();
+
         Preview preview = new Preview.Builder()
                 .build();
 
@@ -188,7 +188,44 @@ public class CameraActivity extends AppCompatActivity {
                 .build();
         PreviewView viewFinder = findViewById(R.id.viewFinder);
         preview.setSurfaceProvider(viewFinder.getSurfaceProvider());
-        androidx.camera.core.Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner)this, cameraSelector, preview);
+        androidx.camera.core.Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner)this, cameraSelector, preview, imageCapture);
+
     }
+
+    private Bitmap toBitmap(ImageProxy image) {
+        System.out.println(image.getFormat());
+        if (image.getFormat() != ImageFormat.YUV_420_888) {
+            Log.e(TAG, "Image format is not YUV_420_888");
+            return null;
+        }
+
+        ImageProxy.PlaneProxy[] planes = image.getPlanes();
+        ByteBuffer yBuffer = planes[0].getBuffer();
+        ByteBuffer uBuffer = planes[1].getBuffer();
+        ByteBuffer vBuffer = planes[2].getBuffer();
+
+        int ySize = yBuffer.remaining();
+        int uSize = uBuffer.remaining();
+        int vSize = vBuffer.remaining();
+
+        byte[] nv21 = new byte[ySize + uSize + vSize];
+        //U and V are swapped
+        yBuffer.get(nv21, 0, ySize);
+        vBuffer.get(nv21, ySize, vSize);
+        uBuffer.get(nv21, ySize + vSize, uSize);
+
+        YuvImage yuvImage = new YuvImage(nv21, ImageFormat.NV21, image.getWidth(), image.getHeight(), null);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        yuvImage.compressToJpeg(new Rect(0, 0, yuvImage.getWidth(), yuvImage.getHeight()), 75, out);
+
+        byte[] imageBytes = out.toByteArray();
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+    }
+
+
+
+
+
+
 
 }
