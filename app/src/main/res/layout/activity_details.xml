@@ -30,6 +30,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="17dp"
             android:layout_marginEnd="20dp"
+            android:gravity="clip_vertical|center_horizontal"
             android:text="RestaurantName"
             android:textSize="24sp" />
 

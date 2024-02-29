@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -46,7 +47,7 @@ public class ListeRestaurants extends Fragment {
         a.thenAccept((res)->{
             restaurants.addAll(res);
             // Créez un adaptateur ArrayAdapter pour lier la liste à la ListView
-            RestaurantAdapter adapter = new RestaurantAdapter(requireContext(), R.layout.item_layout, restaurants,this.rs);
+            RestaurantAdapter adapter = new RestaurantAdapter(requireContext(), R.layout.item_layout, restaurants, this.rs);
             restaurantListView.setAdapter(adapter);
         });
 
@@ -71,8 +72,22 @@ public class ListeRestaurants extends Fragment {
             LayoutInflater inflater = LayoutInflater.from(context);
             View view = inflater.inflate(resource, parent, false);
             Restaurant restaurant = getItem(position);
+
             TextView textViewRestaurantName = view.findViewById(R.id.textViewRestaurantName);
             textViewRestaurantName.setText(restaurant.getNom());
+
+            TextView textViewRestaurantStatus = view.findViewById(R.id.textViewRestaurantStatus);
+
+            String hoursString = restaurant.getHoursString();
+
+            if (restaurant.isOpen()) {
+                textViewRestaurantStatus.setText("Ouvert - " + hoursString);
+                textViewRestaurantStatus.setTextColor(ContextCompat.getColor(getContext(), R.color.green));
+            } else {
+                textViewRestaurantStatus.setText("Fermé - " + hoursString);
+                textViewRestaurantStatus.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
+            }
+
             view.setTag(position);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override

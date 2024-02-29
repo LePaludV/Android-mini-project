@@ -43,7 +43,7 @@ public class CustomInfoWindow extends MarkerInfoWindow {
             }
             else{
                 title.setText(restaurant.getNom());
-                description.setText(restaurant.getDescription()+"\n"+restaurant.getHoraire());
+                description.setText(restaurant.getDescription()+"\n"+restaurant.getHoraires());
                 address.setText(restaurant.getAddress());
                 btn.setVisibility(View.VISIBLE);
                 btn.setOnClickListener(new View.OnClickListener() {
