@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.icu.text.SimpleDateFormat;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -36,11 +37,15 @@ import androidx.camera.video.VideoCapture;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
@@ -105,12 +110,23 @@ public class CameraActivity extends AppCompatActivity {
                     public void onCaptureSuccess(@NonNull ImageProxy image) {
                         super.onCaptureSuccess(image);
                         // Convertir l'objet ImageProxy en Bitmap
+
                         Bitmap bitmap = toBitmap(image);
                         // Créer un Intent pour démarrer DisplayImageActivity
                         Intent intent = new Intent(CameraActivity.this, DisplayImageActivity.class);
-                        // Transmettre le Bitmap à DisplayImageActivity
-                        intent.putExtra("imageBitmap", bitmap);
-                        startActivity(intent);
+                        File tempFile = null;
+                        try {
+                            tempFile = createTempFile(bitmap);
+                        } catch (IOException e) {
+                            Log.e(TAG, "Failed to create temp file", e);
+                        }
+                        if (tempFile != null) {
+                            Uri imageUri = FileProvider.getUriForFile(getApplicationContext(), getPackageName() + ".fileprovider", tempFile);
+                            intent.putExtra("imageUri", imageUri);
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Failed to save image", Toast.LENGTH_SHORT);
+                        }
                         // Fermer l'objet ImageProxy
                         image.close();
                     }
@@ -193,35 +209,33 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private Bitmap toBitmap(ImageProxy image) {
-        System.out.println(image.getFormat());
-        if (image.getFormat() != ImageFormat.YUV_420_888) {
-            Log.e(TAG, "Image format is not YUV_420_888");
+        System.out.println(image);
+        if (image.getFormat() != ImageFormat.JPEG) {
+            Log.e(TAG, "Image format is not JPEG");
             return null;
         }
 
         ImageProxy.PlaneProxy[] planes = image.getPlanes();
-        ByteBuffer yBuffer = planes[0].getBuffer();
-        ByteBuffer uBuffer = planes[1].getBuffer();
-        ByteBuffer vBuffer = planes[2].getBuffer();
+        ByteBuffer buffer = planes[0].getBuffer();
+        byte[] imageBytes = new byte[buffer.remaining()];
+        buffer.get(imageBytes);
 
-        int ySize = yBuffer.remaining();
-        int uSize = uBuffer.remaining();
-        int vSize = vBuffer.remaining();
-
-        byte[] nv21 = new byte[ySize + uSize + vSize];
-        //U and V are swapped
-        yBuffer.get(nv21, 0, ySize);
-        vBuffer.get(nv21, ySize, vSize);
-        uBuffer.get(nv21, ySize + vSize, uSize);
-
-        YuvImage yuvImage = new YuvImage(nv21, ImageFormat.NV21, image.getWidth(), image.getHeight(), null);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        yuvImage.compressToJpeg(new Rect(0, 0, yuvImage.getWidth(), yuvImage.getHeight()), 75, out);
-
-        byte[] imageBytes = out.toByteArray();
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
     }
 
+    private File createTempFile(Bitmap bitmap) throws IOException {
+        File imageFolder = new File(getCacheDir(), "images");
+        if (!imageFolder.exists()) {
+            imageFolder.mkdirs();
+        }
+
+        File tempFile = File.createTempFile("temp_image_", ".jpg", imageFolder);
+        try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+        }
+
+        return tempFile;
+    }
 
 
 

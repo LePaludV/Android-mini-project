@@ -17,13 +17,14 @@ public class DisplayImageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_image);
-
         imageView = findViewById(R.id.imageView);
-        // Récupérer le Bitmap de l'Intent
-        Bitmap bitmap = getIntent().getParcelableExtra("imageBitmap");
 
-        // Afficher le Bitmap dans l'ImageView
-        imageView.setImageBitmap(bitmap);
+        // Récupérer l'URI de l'image à partir de l'Intent
+        Uri imageUri = getIntent().getParcelableExtra("imageUri");
 
+        // Utiliser Glide pour charger l'image à partir de l'URI
+        GlideApp.with(this)
+                .load(imageUri)
+                .into(imageView);
     }
 }
