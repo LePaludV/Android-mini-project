@@ -162,7 +162,6 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private static final String TAG = "CameraXApp";
-    private static final String FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS";
     private static final int REQUEST_CODE_PERMISSIONS = 10;
     private static final String[] REQUIRED_PERMISSIONS = new String[]{
             Manifest.permission.CAMERA,
