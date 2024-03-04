@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -69,7 +70,12 @@ public class CameraActivity extends AppCompatActivity {
         setContentView(R.layout.activity_camera);
         cameraView = findViewById(R.id.camera);
         imageCaptureButton = findViewById(R.id.image_capture_button);
-
+      findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         // Request camera permissions
         if (allPermissionsGranted()) {
             startCamera();
@@ -109,10 +115,8 @@ public class CameraActivity extends AppCompatActivity {
                     @Override
                     public void onCaptureSuccess(@NonNull ImageProxy image) {
                         super.onCaptureSuccess(image);
-                        // Convertir l'objet ImageProxy en Bitmap
 
                         Bitmap bitmap = toBitmap(image);
-                        // Créer un Intent pour démarrer DisplayImageActivity
                         Intent intent = new Intent(CameraActivity.this, DisplayImageActivity.class);
                         File tempFile = null;
                         try {
@@ -127,7 +131,6 @@ public class CameraActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(getApplicationContext(), "Failed to save image", Toast.LENGTH_SHORT);
                         }
-                        // Fermer l'objet ImageProxy
                         image.close();
                     }
 
