@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -12,6 +13,29 @@
         android:layout_alignParentTop="true"
         android:rotation="90"
         android:scaleType="fitCenter" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/filterInfo"
+        android:layout_centerHorizontal="true"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="6dp"
+        android:text="Use arrows to select a filter.\n Or shake your phone to randomize !"
+        android:textAlignment="center"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/filterInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonLayout"
+        android:layout_centerHorizontal="true"
+        android:padding="6dp"
+        android:text="No filter selected"
+        android:textAlignment="center"
+        android:textSize="14sp" />
 
     <LinearLayout
         android:id="@+id/buttonLayout"

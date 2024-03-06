@@ -1,4 +1,4 @@
-package helloandroid.ut3.mini_projet;
+package helloandroid.ut3.mini_projet.activity;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
@@ -10,27 +10,25 @@ import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
-import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.ImageCapture;
 
 import com.bumptech.glide.Glide;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Locale;
+
+import helloandroid.ut3.mini_projet.R;
+import helloandroid.ut3.mini_projet.Shaker;
 
 public class DisplayImageActivity extends AppCompatActivity {
 
@@ -75,7 +73,9 @@ public class DisplayImageActivity extends AppCompatActivity {
 
     private int indice = 0;
 
+    TextView filterInfo;
 
+    Shaker s;
 
 
     @Override
@@ -83,13 +83,17 @@ public class DisplayImageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_image);
         imageView = findViewById(R.id.imageView);
+        filterInfo = findViewById(R.id.filterInfo);
+        s = new Shaker(this);
+        s.start();
         Uri imageUri = getIntent().getParcelableExtra("imageUri");
-        GlideApp.with(this)
+        Glide.with(this)
                 .load(imageUri)
                 .into(imageView);
     findViewById(R.id.buttonBack).setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            s.stop();
             finish();
         }
     });
@@ -100,29 +104,22 @@ public class DisplayImageActivity extends AppCompatActivity {
             saveImageToDevice(imageUri);
         }
     });
-
     findViewById(R.id.buttonNext).setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             indice=(indice+1)%FILTERS.length;
-            Paint paint = new Paint();
-            paint.setColorFilter(applyFilter());
-            imageView.setColorFilter(paint.getColorFilter());
+            changeFilter();
         }
 
     });
-
-        findViewById(R.id.buttonPrevious).setOnClickListener(new View.OnClickListener() {
+    findViewById(R.id.buttonPrevious).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 indice=(indice-1+FILTERS.length)%FILTERS.length;
-                Paint paint = new Paint();
-                paint.setColorFilter(applyFilter());
-                imageView.setColorFilter(paint.getColorFilter());
+                changeFilter();
             }
 
         });
-
     //-> shake to randomize value
         // + add stickers
     }
@@ -170,5 +167,22 @@ public class DisplayImageActivity extends AppCompatActivity {
 
         ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
         return filter;
+    }
+
+    public void onShakeDetected() {
+        indice = getRandomNumber(0,FILTERS.length);
+        changeFilter();
+    }
+    public int getRandomNumber(int min, int max) {
+        return (int) ((Math.random() * (max - min)) + min);
+    }
+
+    public void changeFilter(){
+        //filterInfo
+
+        Paint paint = new Paint();
+        paint.setColorFilter(applyFilter());
+        imageView.setColorFilter(paint.getColorFilter());
+        filterInfo.setText(indice==0 ? "No filter selected" : "Filter "+indice+"/"+FILTERS.length);
     }
 }

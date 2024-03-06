@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import helloandroid.ut3.mini_projet.DetailsActivity;
+import helloandroid.ut3.mini_projet.activity.DetailsActivity;
 import helloandroid.ut3.mini_projet.models.Restaurant;
 
 public class RestaurantsService {

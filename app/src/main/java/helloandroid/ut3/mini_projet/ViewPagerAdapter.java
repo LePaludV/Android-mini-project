@@ -1,12 +1,11 @@
 package helloandroid.ut3.mini_projet;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import helloandroid.ut3.mini_projet.activity.MapActivity;
 import helloandroid.ut3.mini_projet.services.RestaurantsService;
 
 public class ViewPagerAdapter extends FragmentStateAdapter {
