@@ -56,12 +56,6 @@ public class DetailsActivity extends AppCompatActivity {
         horaireDuJour.setText(intent.getStringExtra("HoraireDuJour"));
         note.setText(intent.getStringExtra("Note"));
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            Map<String, ArrayList<Long>> horaires = (Map<String, ArrayList<Long>>) extras.getSerializable("Horaires");
-
-        }
-
         String[] photos = intent.getStringArrayExtra("Photos");
         photoService.setPhoto(photos[0],image);
         FloatingActionButton btnBack = findViewById(R.id.backToMain);
@@ -69,6 +63,15 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        Button reservationButton = findViewById(R.id.reservationButton);
+        reservationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DetailsActivity.this, ReservationActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -79,29 +82,23 @@ public class DetailsActivity extends AppCompatActivity {
         startActivity(intent);
     }
     public void showHorairesPopup(View view) {
-        // Créer un Dialog
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.horaires_popup);
         dialog.setTitle("Horaires");
 
-        // Définir la largeur et la hauteur du Dialog
         Window window = dialog.getWindow();
         if (window == null) {
             return;
         }
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
 
-        // Récupérer la Map des horaires
         Bundle extras = getIntent().getExtras();
         Map<String, ArrayList<Long>> horaires = (Map<String, ArrayList<Long>>) extras.getSerializable("Horaires");
 
-        // Préparer la liste d'éléments pour l'adapter
         List<String> horaireItems = new ArrayList<>();
 
-        // Ajouter un tableau de chaînes contenant les noms des jours de la semaine dans l'ordre souhaité
         String[] joursDeLaSemaine = {"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
 
-        // Modifier la boucle for pour parcourir le tableau joursDeLaSemaine et afficher les horaires correspondants
         for (String jour : joursDeLaSemaine) {
             ArrayList<Long> value = horaires.get(jour);
             if (value != null) {
@@ -113,7 +110,6 @@ public class DetailsActivity extends AppCompatActivity {
                     for (int i = 0; i < value.size(); i += 2) {
                         sb.append(String.format("%02d", value.get(i))).append("h - ").append(String.format("%02d", value.get(i + 1))).append("h");
 
-                        // Ajouter une virgule et un espace entre les horaires d'ouverture, sauf pour le dernier
                         if (i < value.size() - 2) {
                             sb.append(", ");
                         }
@@ -126,23 +122,20 @@ public class DetailsActivity extends AppCompatActivity {
             }
         }
 
-        // Créer un ArrayAdapter pour la ListView
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.horaire_item, R.id.horaireText, horaireItems) {
             @NonNull
             @Override
             public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
                 View view = super.getView(position, convertView, parent);
                 TextView bullet = view.findViewById(R.id.bullet);
-                bullet.setTextColor(getResources().getColor(R.color.black)); // Changer la couleur de la puce ici
+                bullet.setTextColor(getResources().getColor(R.color.black));
                 return view;
             }
         };
 
-        // Remplir la ListView avec l'adapter
         ListView horairesListView = dialog.findViewById(R.id.horairesListView);
         horairesListView.setAdapter(adapter);
 
-        // Afficher le Dialog
         dialog.show();
     }
 

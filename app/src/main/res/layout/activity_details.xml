@@ -187,6 +187,7 @@
                     android:id="@+id/restaurantNote"
                     android:layout_width="233dp"
                     android:layout_height="match_parent"
+                    android:gravity="clip_vertical|start"
                     android:layout_weight="1"
                     android:text="TextView" />
             </LinearLayout>

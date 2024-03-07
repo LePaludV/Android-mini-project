@@ -227,12 +227,27 @@ public class Restaurant {
                 }
             }
         } else {
+            boolean foundNextDay = false;
+
             for (int i = 0; i < hours.size(); i += 2) {
                 long openingHour = hours.get(i);
                 if (hour < openingHour) {
-                    nextOpeningOrClosingTime = "Ouvre à " + convertLongToTime(openingHour);
+                    if (i == 0 || foundNextDay) {
+                        nextOpeningOrClosingTime = "Ouvre demain à " + convertLongToTime(openingHour);
+                    } else {
+                        nextOpeningOrClosingTime = "Ouvre à " + convertLongToTime(openingHour);
+                    }
                     break;
                 }
+
+                long closingHour = hours.get(i + 1);
+                if (hour > closingHour && i + 2 < hours.size()) {
+                    foundNextDay = true;
+                }
+            }
+
+            if (nextOpeningOrClosingTime.isEmpty()) {
+                nextOpeningOrClosingTime = "Ouvre demain à " + convertLongToTime(hours.get(0));
             }
         }
 
