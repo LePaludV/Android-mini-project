@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -68,19 +70,14 @@ public class RestaurantsService {
         intent.putExtra("Id", r.getId());
         intent.putExtra("Titre", r.getNom());
         intent.putExtra("Type", r.getType());
-        intent.putExtra("Description", r.getDescription());
         intent.putExtra("Adresse", r.getAddress());
+        intent.putExtra("Description", r.getDescription());
+        intent.putExtra("HoraireDuJour", r.getNextOpeningOrClosingTime());
+        intent.putExtra("Note", Float.toString(r.getNote()));
 
-        for (Map.Entry<String, ArrayList<Long>> entry : r.getHoraires().entrySet()) {
-            String key = entry.getKey();
-            ArrayList<Long> value = entry.getValue();
-
-            int[] arrayValue = new int[value.size()];
-            for (int i = 0; i < value.size(); i++) {
-                arrayValue[i] = Math.toIntExact(value.get(i));
-            }
-            intent.putExtra(key, arrayValue);
-        }
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("Horaires", (Serializable) r.getHoraires());
+        intent.putExtras(bundle);
 
         intent.putExtra("Photos", r.getPhotos());
         return intent;

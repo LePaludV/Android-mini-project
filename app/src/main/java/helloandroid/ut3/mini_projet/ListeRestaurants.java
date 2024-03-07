@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -80,11 +81,14 @@ public class ListeRestaurants extends Fragment {
 
             String hoursString = restaurant.getHoursString();
 
+            RatingBar ratingBar = view.findViewById(R.id.ratingBar);
+            ratingBar.setRating(restaurant.getNote());
+
             if (restaurant.isOpen()) {
-                textViewRestaurantStatus.setText("Ouvert - " + hoursString);
+                textViewRestaurantStatus.setText("Ouvert actuellement : " + hoursString);
                 textViewRestaurantStatus.setTextColor(ContextCompat.getColor(getContext(), R.color.green));
             } else {
-                textViewRestaurantStatus.setText("Fermé - " + hoursString);
+                textViewRestaurantStatus.setText("Fermé actuellement : " + hoursString);
                 textViewRestaurantStatus.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
             }
 

@@ -2,8 +2,10 @@ package helloandroid.ut3.mini_projet.models;
 
 import com.google.firebase.firestore.GeoPoint;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 public class Restaurant {
@@ -173,5 +175,73 @@ public class Restaurant {
 
         return hoursString.toString();
     }
+
+    public String getNextOpeningOrClosingTime() {
+        Calendar calendar = Calendar.getInstance();
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+
+        String dayOfWeekString;
+        switch (dayOfWeek) {
+            case Calendar.MONDAY:
+                dayOfWeekString = "Lundi";
+                break;
+            case Calendar.TUESDAY:
+                dayOfWeekString = "Mardi";
+                break;
+            case Calendar.WEDNESDAY:
+                dayOfWeekString = "Mercredi";
+                break;
+            case Calendar.THURSDAY:
+                dayOfWeekString = "Jeudi";
+                break;
+            case Calendar.FRIDAY:
+                dayOfWeekString = "Vendredi";
+                break;
+            case Calendar.SATURDAY:
+                dayOfWeekString = "Samedi";
+                break;
+            case Calendar.SUNDAY:
+                dayOfWeekString = "Dimanche";
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + dayOfWeek);
+        }
+
+        ArrayList<Long> hours;
+        if (horaires.containsKey(dayOfWeekString)) {
+            hours = horaires.get(dayOfWeekString);
+        } else {
+            hours = new ArrayList<>();
+        }
+
+        boolean isOpen = isOpen();
+        String nextOpeningOrClosingTime = "";
+
+        if (isOpen) {
+            for (int i = 0; i < hours.size(); i += 2) {
+                long closingHour = hours.get(i + 1);
+                if (hour < closingHour) {
+                    nextOpeningOrClosingTime = "Ferme à " + convertLongToTime(closingHour);
+                    break;
+                }
+            }
+        } else {
+            for (int i = 0; i < hours.size(); i += 2) {
+                long openingHour = hours.get(i);
+                if (hour < openingHour) {
+                    nextOpeningOrClosingTime = "Ouvre à " + convertLongToTime(openingHour);
+                    break;
+                }
+            }
+        }
+
+        return nextOpeningOrClosingTime;
+    }
+
+    private String convertLongToTime(Long hour) {
+        return hour + "h";
+    }
+
 
 }
