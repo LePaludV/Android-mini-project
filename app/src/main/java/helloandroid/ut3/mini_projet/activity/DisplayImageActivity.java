@@ -178,8 +178,6 @@ public class DisplayImageActivity extends AppCompatActivity {
     }
 
     public void changeFilter(){
-        //filterInfo
-
         Paint paint = new Paint();
         paint.setColorFilter(applyFilter());
         imageView.setColorFilter(paint.getColorFilter());
