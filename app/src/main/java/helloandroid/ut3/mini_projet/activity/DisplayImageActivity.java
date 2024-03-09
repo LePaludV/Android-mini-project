@@ -2,7 +2,9 @@ package helloandroid.ut3.mini_projet.activity;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
+import android.content.ClipData;
 import android.content.ContentValues;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -10,22 +12,30 @@ import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.DragEvent;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import helloandroid.ut3.mini_projet.R;
 import helloandroid.ut3.mini_projet.Shaker;
@@ -33,6 +43,10 @@ import helloandroid.ut3.mini_projet.Shaker;
 public class DisplayImageActivity extends AppCompatActivity {
 
     private ImageView imageView;
+    private RecyclerView recyclerView;
+    private MyAdapter adapter;
+    private List<Bitmap> droppedBitmaps = new ArrayList<>();
+    private List<float[]> coordinatesDroppedBitmaps = new ArrayList<>();
 
     private static float[][]FILTERS ={
             {1,1,1},
@@ -70,13 +84,11 @@ public class DisplayImageActivity extends AppCompatActivity {
             {0.86f, 0.61f, 0.35f},
             {0.77f, 0.02f, 0.53f}};
 
-
     private int indice = 0;
 
     TextView filterInfo;
 
     Shaker s;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,29 +102,78 @@ public class DisplayImageActivity extends AppCompatActivity {
         Glide.with(this)
                 .load(imageUri)
                 .into(imageView);
-    findViewById(R.id.buttonBack).setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            s.stop();
-            finish();
-        }
-    });
-    findViewById(R.id.buttonValidate).setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
+        recyclerView = findViewById(R.id.recyclerView);
+        adapter = new MyAdapter(this, getBitmaps());
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-            saveImageToDevice(imageUri);
-        }
-    });
-    findViewById(R.id.buttonNext).setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            indice=(indice+1)%FILTERS.length;
-            changeFilter();
-        }
+        imageView.setOnDragListener(new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case DragEvent.ACTION_DRAG_STARTED:
+                        // do nothing
+                        break;
+                    case DragEvent.ACTION_DRAG_ENTERED:
+                        // do nothing
+                        break;
+                    case DragEvent.ACTION_DRAG_EXITED:
+                        // do nothing
+                        break;
+                    case DragEvent.ACTION_DROP:
+                        // handle the dragged view
+                        View view = (View) event.getLocalState();
+                        view.setVisibility(View.VISIBLE);
+                        ImageView droppedImage = (ImageView) view;
+                        Bitmap bitmap = ((BitmapDrawable) droppedImage.getDrawable()).getBitmap();
+                        if (bitmap != null) {
+                            // create a new mutable bitmap with the same size as the ImageView
+                            Bitmap mutableBitmap = Bitmap.createBitmap(imageView.getWidth(), imageView.getHeight(), Bitmap.Config.ARGB_8888);
+                            // create a new canvas and draw the original bitmap on it
+                            Canvas canvas = new Canvas(mutableBitmap);
+                            canvas.drawBitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap(), 0, 0, null);
+                            // draw the dropped bitmap on the canvas
+                            canvas.drawBitmap(bitmap, event.getX() - (bitmap.getWidth() / 2), event.getY() - (bitmap.getHeight() / 2), null);
+                            // update the ImageView with the new mutable bitmap
+                            imageView.setImageBitmap(mutableBitmap);
+                            // add the dropped bitmap and its coordinates to the lists
+                            droppedBitmaps.add(bitmap);
+                            coordinatesDroppedBitmaps.add(new float[]{event.getX() - (bitmap.getWidth() / 2), event.getY() - (bitmap.getHeight() / 2)});
+                        }
+                        break;
+                    case DragEvent.ACTION_DRAG_ENDED:
+                        // do nothing
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
 
-    });
-    findViewById(R.id.buttonPrevious).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.buttonBack).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                s.stop();
+                finish();
+            }
+        });
+        findViewById(R.id.buttonValidate).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveImageToDevice();
+            }
+        });
+        findViewById(R.id.buttonNext).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                indice=(indice+1)%FILTERS.length;
+                changeFilter();
+            }
+
+        });
+        findViewById(R.id.buttonPrevious).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 indice=(indice-1+FILTERS.length)%FILTERS.length;
@@ -120,36 +181,30 @@ public class DisplayImageActivity extends AppCompatActivity {
             }
 
         });
-    //-> shake to randomize value
-        // + add stickers
     }
 
-    private void saveImageToDevice(Uri imageUri) {
+    private void saveImageToDevice() {
+        Bitmap originalBitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        Bitmap mutableBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(mutableBitmap);
+        Paint paint = new Paint();
+        paint.setColorFilter(applyFilter());
+        canvas.drawBitmap(originalBitmap, 0, 0, paint);
+        for( int i = 0; i<droppedBitmaps.size();i++){
+            canvas.drawBitmap(droppedBitmaps.get(i), coordinatesDroppedBitmaps.get(i)[0],coordinatesDroppedBitmaps.get(i)[1], null);
+        }
         String fileName = "IMG_" + System.currentTimeMillis() + ".jpg";
-
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
         values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-       values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/InsTable");
+        values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/InsTable");
         Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-
-        try (InputStream inputStream = getContentResolver().openInputStream(imageUri)) {
-            Bitmap imageBitmap = BitmapFactory.decodeStream(inputStream);
-            Paint paint = new Paint();
-            paint.setColorFilter(applyFilter());
-            Bitmap filteredImageBitmap = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), imageBitmap.getConfig());
-            Canvas canvas = new Canvas(filteredImageBitmap);
-            canvas.drawBitmap(imageBitmap, 0, 0, paint);
-            try (OutputStream outputStream = getContentResolver().openOutputStream(uri)) {
-                filteredImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-                Toast.makeText(this, "Image enregistrée avec succès", Toast.LENGTH_SHORT).show();
-            } catch (IOException e) {
-                Log.e(TAG, "Erreur lors de l'enregistrement de l'image", e);
-                Toast.makeText(this, "Erreur lors de l'enregistrement de l'image", Toast.LENGTH_SHORT).show();
-            }
+        try (OutputStream outputStream = getContentResolver().openOutputStream(uri)) {
+            mutableBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            Toast.makeText(this, "Image enregistrée avec succès", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
-            Log.e(TAG, "Erreur lors de l'ouverture du flux d'entrée", e);
-            Toast.makeText(this, "Erreur lors de l'ouverture du flux d'entrée", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Erreur lors de l'enregistrement de l'image", e);
+            Toast.makeText(this, "Erreur lors de l'enregistrement de l'image", Toast.LENGTH_SHORT).show();
         }
     }
     public ColorFilter applyFilter() {
@@ -182,5 +237,76 @@ public class DisplayImageActivity extends AppCompatActivity {
         paint.setColorFilter(applyFilter());
         imageView.setColorFilter(paint.getColorFilter());
         filterInfo.setText(indice==0 ? "No filter selected" : "Filter "+indice+"/"+FILTERS.length);
+    }
+
+    private List<Bitmap> getBitmaps() {
+        List<Bitmap> bitmaps = new ArrayList<>();
+        Bitmap bitmap1 = BitmapFactory.decodeResource(getResources(), R.drawable.lips);
+        Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.deer);
+        Bitmap bitmap3 = BitmapFactory.decodeResource(getResources(), R.drawable.pouce);
+        // Add more bitmaps as needed
+        bitmaps.add(bitmap1);
+        bitmaps.add(bitmap2);
+        bitmaps.add(bitmap3);
+        return bitmaps;
+    }
+
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
+        public ImageView imageView;
+
+        public MyViewHolder(View itemView) {
+            super(itemView);
+            imageView = itemView.findViewById(R.id.imageView);
+        }
+    }
+
+    public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
+
+        private List<Bitmap> mData;
+        private Context mContext;
+
+        public MyAdapter(Context context, List<Bitmap> data) {
+            mData = data;
+            mContext = context;
+        }
+
+        @Override
+        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_view, parent, false);
+            view.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
+                    v.startDrag(null, shadowBuilder, v, 0);
+                    return false;
+                }
+            });
+            return new MyViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(MyViewHolder holder, int position) {
+            Bitmap bitmap = mData.get(position);
+            holder.imageView.setImageBitmap(bitmap);
+            holder.imageView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        ClipData data = ClipData.newPlainText("", "");
+                        View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
+                        v.startDrag(data, shadowBuilder, v, 0);
+                        v.setVisibility(View.INVISIBLE);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return mData.size();
+        }
     }
 }

@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -81,18 +82,11 @@ public class CameraActivity extends AppCompatActivity {
             }
         });
 
-        /*cameraView.videoCaptureButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                captureVideo();
-            }
-        });*/
 
         cameraExecutor = Executors.newSingleThreadExecutor();
     }
 
     public void takePhoto() {
-        System.out.println("ON PREND LA HPOTO");
         ImageCapture imageCapture = this.imageCapture;
         if (imageCapture == null) {
             Log.e(TAG, "Image capture is null");
@@ -106,10 +100,15 @@ public class CameraActivity extends AppCompatActivity {
                         super.onCaptureSuccess(image);
 
                         Bitmap bitmap = toBitmap(image);
+                        Matrix matrix = new Matrix();
+                        matrix.postRotate(90);
+                        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, image.getWidth(), image.getHeight(), true);
+
+                        Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
                         Intent intent = new Intent(CameraActivity.this, DisplayImageActivity.class);
                         File tempFile = null;
                         try {
-                            tempFile = createTempFile(bitmap);
+                            tempFile = createTempFile(rotatedBitmap);
                         } catch (IOException e) {
                             Log.e(TAG, "Failed to create temp file", e);
                         }
