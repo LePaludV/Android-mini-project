@@ -58,13 +58,13 @@ public class DetailsActivity extends AppCompatActivity {
 
         String[] photos = intent.getStringArrayExtra("Photos");
         photoService.setPhoto(photos[0],image);
-        /*FloatingActionButton btnBack = findViewById(R.id.backToMain);
+        FloatingActionButton btnBack = findViewById(R.id.backButton);
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
-        });*/
+        });
 
         Button reservationButton = findViewById(R.id.reservationButton);
         reservationButton.setOnClickListener(new View.OnClickListener() {
