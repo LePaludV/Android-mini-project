@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,8 +38,15 @@ public class DetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+
         PhotoService photoService = new PhotoService(getApplicationContext());
+
         Intent intent = getIntent();
+        String[] photos = intent.getStringArrayExtra("Photos");
+        Bundle extras = intent.getExtras();
+        Map<String, ArrayList<Long>> horaires = (Map<String, ArrayList<Long>>) extras.getSerializable("Horaires");
+
+        ImageView image = findViewById(R.id.restaurantImage);
         TextView title = findViewById(R.id.restaurantName);
         TextView type = findViewById(R.id.restaurantType);
         TextView address = findViewById(R.id.restaurantAddress);
@@ -46,9 +54,10 @@ public class DetailsActivity extends AppCompatActivity {
         TextView nextHoraire = findViewById(R.id.restaurantHoraire);
         TextView note = findViewById(R.id.restaurantNote);
 
-        ImageView image = findViewById(R.id.restaurantImage);
 
         restaurantId = intent.getStringExtra("Id");
+
+        photoService.setPhoto(photos[0],image);
         title.setText(intent.getStringExtra("Titre"));
         type.setText(intent.getStringExtra("Type"));
         address.setText(intent.getStringExtra("Adresse"));
@@ -56,8 +65,9 @@ public class DetailsActivity extends AppCompatActivity {
         nextHoraire.setText(intent.getStringExtra("HoraireDuJour"));
         note.setText(intent.getStringExtra("Note"));
 
-        String[] photos = intent.getStringArrayExtra("Photos");
-        photoService.setPhoto(photos[0],image);
+
+
+
         FloatingActionButton btnBack = findViewById(R.id.backButton);
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +81,11 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DetailsActivity.this, ReservationActivity.class);
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("Horaires", (Serializable) horaires);
+                intent.putExtras(bundle);
+
                 startActivity(intent);
             }
         });

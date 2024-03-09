@@ -7,32 +7,44 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Layout;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.google.android.material.textfield.TextInputLayout;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @SuppressLint("MissingInflatedId")
 public class ReservationActivity extends AppCompatActivity {
+
+    private Map<String, ArrayList<Long>> horaires;
+
+    private CalendarView calendarView;
+    private LinearLayout timeLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_make_reservation);
+
+        calendarView = new CalendarView(getApplicationContext());
+
+        Bundle extras = getIntent().getExtras();
+        horaires = (Map<String, ArrayList<Long>>) extras.getSerializable("Horaires");
 
         NumberPicker numberPicker = findViewById(R.id.number_picker);
         numberPicker.setMinValue(1);
@@ -43,20 +55,30 @@ public class ReservationActivity extends AppCompatActivity {
         dateLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CalendarView calendarView = new CalendarView(getApplicationContext());
                 DatePickerFragment fragment = DatePickerFragment.newInstance(calendarView, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                         String selectedDate = String.format("%02d/%02d/%d", dayOfMonth, month + 1, year);
                         TextView selectedDateTextView = findViewById(R.id.selected_date);
-                        selectedDateTextView.setText(selectedDate);
+
+                        if (isRestaurantOpen(selectedDate)) {
+                            timeLayout.setEnabled(true);
+                            timeLayout.setAlpha(1.0f);
+                            selectedDateTextView.setText(selectedDate);
+                        } else {
+                            Toast.makeText(ReservationActivity.this, "Le restaurant est fermé ce jour-là.", Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
+                fragment.setMinDate(System.currentTimeMillis());
                 fragment.show(getSupportFragmentManager(), "date_picker");
             }
         });
 
-        LinearLayout timeLayout  = findViewById(R.id.time_layout);
+        timeLayout = findViewById(R.id.time_layout);
+        timeLayout.setEnabled(false);
+        timeLayout.setAlpha(0.5f);
+
         timeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,6 +110,39 @@ public class ReservationActivity extends AppCompatActivity {
             }
         });
     }
+
+    private boolean isRestaurantOpen(String selectedDate) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        try {
+            Date date = dateFormat.parse(selectedDate);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+            switch (dayOfWeek) {
+                case Calendar.SUNDAY:
+                    return horaires.containsKey("Dimanche");
+                case Calendar.MONDAY:
+                    return horaires.containsKey("Lundi");
+                case Calendar.TUESDAY:
+                    return horaires.containsKey("Mardi");
+                case Calendar.WEDNESDAY:
+                    return horaires.containsKey("Mercredi");
+                case Calendar.THURSDAY:
+                    return horaires.containsKey("Jeudi");
+                case Calendar.FRIDAY:
+                    return horaires.containsKey("Vendredi");
+                case Calendar.SATURDAY:
+                    return horaires.containsKey("Samedi");
+                default:
+                    return false;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
     private boolean validateForm() {
         EditText firstNameEditText = findViewById(R.id.firstName);

@@ -16,12 +16,17 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
     private CalendarView calendarView;
     private DatePickerDialog.OnDateSetListener listener;
+    private long minDate = -1;
 
     public static DatePickerFragment newInstance(CalendarView calendarView, DatePickerDialog.OnDateSetListener listener) {
         DatePickerFragment fragment = new DatePickerFragment();
         fragment.calendarView = calendarView;
         fragment.listener = listener;
         return fragment;
+    }
+
+    public void setMinDate(long minDate) {
+        this.minDate = minDate;
     }
 
     @NonNull
@@ -32,7 +37,12 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        return new DatePickerDialog(getActivity(), this, year, month, day);
+        DatePickerDialog dialog = new DatePickerDialog(getActivity(), this, year, month, day);
+        DatePicker datePicker = dialog.getDatePicker();
+        if (minDate != -1) {
+            datePicker.setMinDate(minDate);
+        }
+        return dialog;
     }
 
     @Override
@@ -47,3 +57,4 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         }
     }
 }
+
