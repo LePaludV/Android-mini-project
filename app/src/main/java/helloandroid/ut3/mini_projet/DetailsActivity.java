@@ -43,7 +43,7 @@ public class DetailsActivity extends AppCompatActivity {
         TextView type = findViewById(R.id.restaurantType);
         TextView address = findViewById(R.id.restaurantAddress);
         TextView desc = findViewById(R.id.restaurantDescription);
-        TextView horaireDuJour = findViewById(R.id.restaurantHoraire);
+        TextView nextHoraire = findViewById(R.id.restaurantHoraire);
         TextView note = findViewById(R.id.restaurantNote);
 
         ImageView image = findViewById(R.id.restaurantImage);
@@ -53,18 +53,18 @@ public class DetailsActivity extends AppCompatActivity {
         type.setText(intent.getStringExtra("Type"));
         address.setText(intent.getStringExtra("Adresse"));
         desc.setText(intent.getStringExtra("Description"));
-        horaireDuJour.setText(intent.getStringExtra("HoraireDuJour"));
+        nextHoraire.setText(intent.getStringExtra("HoraireDuJour"));
         note.setText(intent.getStringExtra("Note"));
 
         String[] photos = intent.getStringArrayExtra("Photos");
         photoService.setPhoto(photos[0],image);
-        FloatingActionButton btnBack = findViewById(R.id.backToMain);
+        /*FloatingActionButton btnBack = findViewById(R.id.backToMain);
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
-        });
+        });*/
 
         Button reservationButton = findViewById(R.id.reservationButton);
         reservationButton.setOnClickListener(new View.OnClickListener() {

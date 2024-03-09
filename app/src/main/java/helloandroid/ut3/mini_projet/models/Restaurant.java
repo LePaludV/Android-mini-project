@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public class Restaurant {
@@ -73,7 +74,6 @@ public class Restaurant {
         Calendar calendar = Calendar.getInstance();
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
 
         String dayOfWeekString;
         switch (dayOfWeek) {
@@ -257,6 +257,11 @@ public class Restaurant {
     private String convertLongToTime(Long hour) {
         return hour + "h";
     }
+
+    public List<String> getOpenDays() {
+        return new ArrayList<>(horaires.keySet());
+    }
+
 
 
 }

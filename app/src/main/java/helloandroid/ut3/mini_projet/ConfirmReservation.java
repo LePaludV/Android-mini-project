@@ -15,14 +15,20 @@ public class ConfirmReservation extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirm_reservation);
 
+        TextView confirmText = findViewById(R.id.confirmText);
+
         Intent intent = getIntent();
-        TextView firstNameView = findViewById(R.id.firstName_confirmed);
-        TextView lastNameView = findViewById(R.id.lastName_confirmed);
+        String lastName = intent.getStringExtra("LastName");
+        String date = intent.getStringExtra("Date");
+        String time = intent.getStringExtra("Time");
 
-        firstNameView.setText(intent.getStringExtra("firstName"));
-        lastNameView.setText(intent.getStringExtra("lastName"));
+        int peopleNumber = intent.getIntExtra("People", 1);
+        String people = (peopleNumber == 1) ? "personne" : "personnes";
 
+        String confirmedMessage = String.format("Votre réservation au nom de %s le %s à %s pour %d %s a bien été prise en compte",
+                lastName, date, time, peopleNumber, people);
 
+        confirmText.setText(confirmedMessage);
 
     }
 

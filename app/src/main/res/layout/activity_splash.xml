@@ -6,31 +6,28 @@
     android:layout_height="match_parent"
     tools:context=".SplashActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
+    <ImageView
+        android:id="@+id/imageSplash"
+        android:layout_width="226dp"
+        android:layout_height="246dp"
+        android:layout_marginTop="204dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher_foreground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/nameSplash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="InsTable"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/imageSplash"
-            android:layout_width="match_parent"
-            android:layout_height="454dp"
-            android:layout_marginTop="50dp"
-            android:src="@drawable/ic_launcher_foreground" />
-
-        <TextView
-            android:id="@+id/nameSplash"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="-50dp"
-            android:gravity="center"
-            android:text="InsTable"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display3" />
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/imageSplash"
+        app:layout_constraintVertical_bias="0.101" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
