@@ -42,8 +42,8 @@ public class MapActivity extends Fragment {
     private Context ctx = null;
     private RestaurantsService rs;
 
-    public MapActivity(RestaurantsService rs){
-        this.rs = rs;
+    public MapActivity(){
+        this.rs = new RestaurantsService();
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

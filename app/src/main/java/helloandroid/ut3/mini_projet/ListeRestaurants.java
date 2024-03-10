@@ -2,19 +2,19 @@ package helloandroid.ut3.mini_projet;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -31,8 +31,8 @@ public class ListeRestaurants extends Fragment {
     ListView restaurantListView;
     List<Restaurant> restaurants;
 
-    public ListeRestaurants(RestaurantsService rs){
-        this.rs=rs;
+    public ListeRestaurants(){
+        this.rs=new RestaurantsService();
     }
 
     @SuppressLint("MissingInflatedId")
@@ -46,7 +46,7 @@ public class ListeRestaurants extends Fragment {
         a.thenAccept((res)->{
             restaurants.addAll(res);
             // Créez un adaptateur ArrayAdapter pour lier la liste à la ListView
-            RestaurantAdapter adapter = new RestaurantAdapter(requireContext(), R.layout.item_layout, restaurants,this.rs);
+            RestaurantAdapter adapter = new RestaurantAdapter(requireContext(), R.layout.restaurant_item_layout, restaurants, this.rs);
             restaurantListView.setAdapter(adapter);
         });
 
@@ -71,8 +71,25 @@ public class ListeRestaurants extends Fragment {
             LayoutInflater inflater = LayoutInflater.from(context);
             View view = inflater.inflate(resource, parent, false);
             Restaurant restaurant = getItem(position);
+
             TextView textViewRestaurantName = view.findViewById(R.id.textViewRestaurantName);
             textViewRestaurantName.setText(restaurant.getNom());
+
+            TextView textViewRestaurantStatus = view.findViewById(R.id.textViewRestaurantStatus);
+
+            String hoursString = restaurant.getHoursString();
+
+            RatingBar ratingBar = view.findViewById(R.id.ratingBar);
+            ratingBar.setRating(restaurant.getNote());
+
+            if (restaurant.isOpen()) {
+                textViewRestaurantStatus.setText("Ouvert actuellement : " + hoursString);
+                textViewRestaurantStatus.setTextColor(ContextCompat.getColor(getContext(), R.color.green));
+            } else {
+                textViewRestaurantStatus.setText("Fermé actuellement : " + hoursString);
+                textViewRestaurantStatus.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
+            }
+
             view.setTag(position);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
