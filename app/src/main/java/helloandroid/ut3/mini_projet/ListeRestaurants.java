@@ -31,8 +31,8 @@ public class ListeRestaurants extends Fragment {
     ListView restaurantListView;
     List<Restaurant> restaurants;
 
-    public ListeRestaurants(RestaurantsService rs){
-        this.rs=rs;
+    public ListeRestaurants(){
+        this.rs=new RestaurantsService();
     }
 
     @SuppressLint("MissingInflatedId")

@@ -75,7 +75,14 @@ public class DetailsActivity extends AppCompatActivity {
                 finish();
             }
         });
-
+    findViewById(R.id.reviewBtn).setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(getApplicationContext(), ReviewActivity.class);
+            intent.putExtra("restaurantId", restaurantId);
+            startActivity(intent);
+        }
+    });
         Button reservationButton = findViewById(R.id.reservationButton);
         reservationButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,11 +98,7 @@ public class DetailsActivity extends AppCompatActivity {
         });
     }
 
-    public void onClickReviewBtn(View v) {
-        Intent intent = new Intent(getApplicationContext(), ReviewActivity.class);
-        intent.putExtra("restaurantId", restaurantId);
-        startActivity(intent);
-    }
+
     public void showHorairesPopup(View view) {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.horaires_popup);

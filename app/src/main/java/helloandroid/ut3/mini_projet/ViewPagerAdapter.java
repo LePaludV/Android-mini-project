@@ -22,8 +22,8 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         switch (position) {
-            case 1 : return new MapActivity(this.rs);
-            default: return new ListeRestaurants(this.rs);
+            case 1 : return new MapActivity();
+            default: return new ListeRestaurants();
         }
     }
 
