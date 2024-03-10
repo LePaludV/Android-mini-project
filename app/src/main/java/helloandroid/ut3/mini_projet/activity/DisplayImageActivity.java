@@ -127,14 +127,18 @@ public class DisplayImageActivity extends AppCompatActivity {
                         ImageView droppedImage = (ImageView) view;
                         Bitmap bitmap = ((BitmapDrawable) droppedImage.getDrawable()).getBitmap();
                         if (bitmap != null) {
+                            // create a new mutable bitmap with the same size as the original bitmap
                             Bitmap mutableBitmap = Bitmap.createBitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap().getWidth(), ((BitmapDrawable) imageView.getDrawable()).getBitmap().getHeight(), Bitmap.Config.ARGB_8888);
+                            // create a new canvas and draw the original bitmap on it at the same position and size
                             Canvas canvas = new Canvas(mutableBitmap);
                             canvas.drawBitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap(), 0, 0, null);
-                            float left = event.getX() - (bitmap.getWidth() / 2f);
+                            // resize the dropped bitmap to a fixed size of 100x100 pixels
+                            Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
+                            float left = event.getX() - (resizedBitmap.getWidth() / 2f);
                             float top = event.getY() / 2f;
-                            canvas.drawBitmap(bitmap, left, top, null);
+                            canvas.drawBitmap(resizedBitmap, left, top, null);
                             imageView.setImageBitmap(mutableBitmap);
-                            droppedBitmaps.add(bitmap);
+                            droppedBitmaps.add(resizedBitmap);
                             coordinatesDroppedBitmaps.add(new float[]{left, top});
                         }
                         break;
@@ -235,24 +239,23 @@ public class DisplayImageActivity extends AppCompatActivity {
         filterInfo.setText(indice==0 ? "No filter selected" : "Filter "+indice+"/"+FILTERS.length);
     }
 
-    private Bitmap[] stickers = {
-            BitmapFactory.decodeResource(getResources(), R.drawable.lips),
-            BitmapFactory.decodeResource(getResources(), R.drawable.deer),
-            BitmapFactory.decodeResource(getResources(), R.drawable.pouce),
-            BitmapFactory.decodeResource(getResources(), R.drawable.a),
-            BitmapFactory.decodeResource(getResources(), R.drawable.ae),
-            BitmapFactory.decodeResource(getResources(), R.drawable.ag),
-            BitmapFactory.decodeResource(getResources(), R.drawable.ar),
-            BitmapFactory.decodeResource(getResources(), R.drawable.as),
-            BitmapFactory.decodeResource(getResources(), R.drawable.at),
-            BitmapFactory.decodeResource(getResources(), R.drawable.at),
-            BitmapFactory.decodeResource(getResources(), R.drawable.az),
-            BitmapFactory.decodeResource(getResources(), R.drawable.ds),
-            BitmapFactory.decodeResource(getResources(), R.drawable.ea),
-            BitmapFactory.decodeResource(getResources(), R.drawable.sd),
-            BitmapFactory.decodeResource(getResources(), R.drawable.za),
-    };
     private List<Bitmap> getBitmaps() {
+        Bitmap[] stickers = {
+                BitmapFactory.decodeResource(getResources(), R.drawable.lips),
+                BitmapFactory.decodeResource(getResources(), R.drawable.deer),
+                BitmapFactory.decodeResource(getResources(), R.drawable.pouce),
+                BitmapFactory.decodeResource(getResources(), R.drawable.a),
+                BitmapFactory.decodeResource(getResources(), R.drawable.ae),
+                BitmapFactory.decodeResource(getResources(), R.drawable.ag),
+                BitmapFactory.decodeResource(getResources(), R.drawable.ar),
+                BitmapFactory.decodeResource(getResources(), R.drawable.as),
+                BitmapFactory.decodeResource(getResources(), R.drawable.at),
+                BitmapFactory.decodeResource(getResources(), R.drawable.az),
+                BitmapFactory.decodeResource(getResources(), R.drawable.ds),
+                BitmapFactory.decodeResource(getResources(), R.drawable.ea),
+                BitmapFactory.decodeResource(getResources(), R.drawable.sd),
+                BitmapFactory.decodeResource(getResources(), R.drawable.za),
+        };
         List<Bitmap> bitmaps = new ArrayList<>();
         for(Bitmap a : stickers){
             bitmaps.add(a);
