@@ -122,24 +122,20 @@ public class DisplayImageActivity extends AppCompatActivity {
                         // do nothing
                         break;
                     case DragEvent.ACTION_DROP:
-                        // handle the dragged view
                         View view = (View) event.getLocalState();
                         view.setVisibility(View.VISIBLE);
                         ImageView droppedImage = (ImageView) view;
                         Bitmap bitmap = ((BitmapDrawable) droppedImage.getDrawable()).getBitmap();
                         if (bitmap != null) {
-                            // create a new mutable bitmap with the same size as the ImageView
-                            Bitmap mutableBitmap = Bitmap.createBitmap(imageView.getWidth(), imageView.getHeight(), Bitmap.Config.ARGB_8888);
-                            // create a new canvas and draw the original bitmap on it
+                            Bitmap mutableBitmap = Bitmap.createBitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap().getWidth(), ((BitmapDrawable) imageView.getDrawable()).getBitmap().getHeight(), Bitmap.Config.ARGB_8888);
                             Canvas canvas = new Canvas(mutableBitmap);
                             canvas.drawBitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap(), 0, 0, null);
-                            // draw the dropped bitmap on the canvas
-                            canvas.drawBitmap(bitmap, event.getX() - (bitmap.getWidth() / 2), event.getY() - (bitmap.getHeight() / 2), null);
-                            // update the ImageView with the new mutable bitmap
+                            float left = event.getX() - (bitmap.getWidth() / 2f);
+                            float top = event.getY() / 2f;
+                            canvas.drawBitmap(bitmap, left, top, null);
                             imageView.setImageBitmap(mutableBitmap);
-                            // add the dropped bitmap and its coordinates to the lists
                             droppedBitmaps.add(bitmap);
-                            coordinatesDroppedBitmaps.add(new float[]{event.getX() - (bitmap.getWidth() / 2), event.getY() - (bitmap.getHeight() / 2)});
+                            coordinatesDroppedBitmaps.add(new float[]{left, top});
                         }
                         break;
                     case DragEvent.ACTION_DRAG_ENDED:
@@ -239,15 +235,28 @@ public class DisplayImageActivity extends AppCompatActivity {
         filterInfo.setText(indice==0 ? "No filter selected" : "Filter "+indice+"/"+FILTERS.length);
     }
 
+    private Bitmap[] stickers = {
+            BitmapFactory.decodeResource(getResources(), R.drawable.lips),
+            BitmapFactory.decodeResource(getResources(), R.drawable.deer),
+            BitmapFactory.decodeResource(getResources(), R.drawable.pouce),
+            BitmapFactory.decodeResource(getResources(), R.drawable.a),
+            BitmapFactory.decodeResource(getResources(), R.drawable.ae),
+            BitmapFactory.decodeResource(getResources(), R.drawable.ag),
+            BitmapFactory.decodeResource(getResources(), R.drawable.ar),
+            BitmapFactory.decodeResource(getResources(), R.drawable.as),
+            BitmapFactory.decodeResource(getResources(), R.drawable.at),
+            BitmapFactory.decodeResource(getResources(), R.drawable.at),
+            BitmapFactory.decodeResource(getResources(), R.drawable.az),
+            BitmapFactory.decodeResource(getResources(), R.drawable.ds),
+            BitmapFactory.decodeResource(getResources(), R.drawable.ea),
+            BitmapFactory.decodeResource(getResources(), R.drawable.sd),
+            BitmapFactory.decodeResource(getResources(), R.drawable.za),
+    };
     private List<Bitmap> getBitmaps() {
         List<Bitmap> bitmaps = new ArrayList<>();
-        Bitmap bitmap1 = BitmapFactory.decodeResource(getResources(), R.drawable.lips);
-        Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.deer);
-        Bitmap bitmap3 = BitmapFactory.decodeResource(getResources(), R.drawable.pouce);
-        // Add more bitmaps as needed
-        bitmaps.add(bitmap1);
-        bitmaps.add(bitmap2);
-        bitmaps.add(bitmap3);
+        for(Bitmap a : stickers){
+            bitmaps.add(a);
+        }
         return bitmaps;
     }
 
