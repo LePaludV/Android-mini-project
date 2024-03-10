@@ -19,6 +19,8 @@ import helloandroid.ut3.mini_projet.services.RestaurantsService;
 
 public class DetailsActivity extends AppCompatActivity {
 
+    String restaurantId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +34,7 @@ public class DetailsActivity extends AppCompatActivity {
         TextView horaire= findViewById(R.id.restaurantHoraire);
         ImageView image = findViewById(R.id.restaurantImage);
 
+        restaurantId = intent.getStringExtra("Id");
         title.setText(intent.getStringExtra("Titre"));
         type.setText(intent.getStringExtra("Type"));
         desc.setText(intent.getStringExtra("Description"));
@@ -46,5 +49,11 @@ public class DetailsActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    public void onClickReviewBtn(View v) {
+        Intent intent = new Intent(getApplicationContext(), ReviewActivity.class);
+        intent.putExtra("restaurantId", restaurantId);
+        startActivity(intent);
     }
 }

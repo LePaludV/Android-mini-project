@@ -106,6 +106,7 @@ public class RestaurantsService {
 
     public Intent goToDetails(Context ctx, Restaurant r){
         Intent intent = new Intent(ctx, DetailsActivity.class);
+        intent.putExtra("Id", r.getId());
         intent.putExtra("Titre", r.getNom());
         intent.putExtra("Type", r.getType());
         intent.putExtra("Description", r.getDescription());
