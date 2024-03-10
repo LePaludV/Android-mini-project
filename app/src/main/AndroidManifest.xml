@@ -28,10 +28,10 @@
             android:name=".ConfirmReservation"
             android:exported="false" />
         <activity
-            android:name=".ReservationActivity"
+            android:name=".activity.ReservationActivity"
             android:exported="false" />
         <activity
-            android:name=".SplashActivity"
+            android:name=".activity.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -56,7 +56,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ReviewActivity" />
+        <activity android:name=".activity.ReviewActivity" />
         <activity android:name=".activity.MapActivity" />
         <provider
             android:name="androidx.core.content.FileProvider"

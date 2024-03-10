@@ -1,4 +1,4 @@
-package helloandroid.ut3.mini_projet;
+package helloandroid.ut3.mini_projet.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import helloandroid.ut3.mini_projet.R;
 import helloandroid.ut3.mini_projet.models.Review;
 import helloandroid.ut3.mini_projet.services.ReviewService;
 
@@ -37,7 +38,13 @@ public class ReviewActivity extends AppCompatActivity {
         reviewInput = findViewById(R.id.reviewInput);
         ratingBar = findViewById(R.id.ratingBar);
 
-
+        findViewById(R.id.addReviewImageBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ReviewActivity.this,CameraActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     public void OnClickReviewSendBtn(View v) {

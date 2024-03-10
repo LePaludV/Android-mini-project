@@ -1,4 +1,4 @@
-package helloandroid.ut3.mini_projet;
+package helloandroid.ut3.mini_projet.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;

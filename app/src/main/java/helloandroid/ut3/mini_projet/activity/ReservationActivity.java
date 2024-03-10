@@ -1,4 +1,4 @@
-package helloandroid.ut3.mini_projet;
+package helloandroid.ut3.mini_projet.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -27,6 +27,11 @@ import java.util.Locale;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import helloandroid.ut3.mini_projet.ConfirmReservation;
+import helloandroid.ut3.mini_projet.DatePickerFragment;
+import helloandroid.ut3.mini_projet.R;
+import helloandroid.ut3.mini_projet.TimePickerFragment;
 
 @SuppressLint("MissingInflatedId")
 public class ReservationActivity extends AppCompatActivity {

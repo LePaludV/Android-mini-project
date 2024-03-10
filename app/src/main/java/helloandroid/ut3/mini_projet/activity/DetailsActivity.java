@@ -94,14 +94,6 @@ public class DetailsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    btnAvis = findViewById(R.id.reviewBtn);
-    btnAvis.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(DetailsActivity.this,CameraActivity.class);
-            startActivity(intent);
-        }
-    });
     }
 
 
