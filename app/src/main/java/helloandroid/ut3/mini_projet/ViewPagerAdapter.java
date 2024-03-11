@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import helloandroid.ut3.mini_projet.activity.MapActivity;
 import helloandroid.ut3.mini_projet.services.RestaurantsService;
 
 public class ViewPagerAdapter extends FragmentStateAdapter {
@@ -24,6 +25,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
         switch (position) {
             case 1 : return new MapActivity();
             default: return new ListeRestaurants();
+
         }
     }
 

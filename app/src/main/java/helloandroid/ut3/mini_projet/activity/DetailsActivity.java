@@ -1,13 +1,10 @@
-package helloandroid.ut3.mini_projet;
+package helloandroid.ut3.mini_projet.activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -27,13 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import helloandroid.ut3.mini_projet.R;
 import helloandroid.ut3.mini_projet.services.PhotoService;
-import helloandroid.ut3.mini_projet.services.RestaurantsService;
 
 public class DetailsActivity extends AppCompatActivity {
 
     String restaurantId;
 
+    private Button btnAvis;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,7 +121,6 @@ public class DetailsActivity extends AppCompatActivity {
                 StringBuilder sb = new StringBuilder();
                 sb.append(jour).append(": ");
 
-                // Vérifier s'il y a plus d'un horaire d'ouverture pour le jour actuel
                 if (value.size() > 2) {
                     for (int i = 0; i < value.size(); i += 2) {
                         sb.append(String.format("%02d", value.get(i))).append("h - ").append(String.format("%02d", value.get(i + 1))).append("h");

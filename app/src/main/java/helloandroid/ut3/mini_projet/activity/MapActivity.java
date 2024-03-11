@@ -1,4 +1,4 @@
-package helloandroid.ut3.mini_projet;
+package helloandroid.ut3.mini_projet.activity;
 
 import android.Manifest;
 import android.content.Context;
@@ -33,6 +33,8 @@ import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
+import helloandroid.ut3.mini_projet.CustomInfoWindow;
+import helloandroid.ut3.mini_projet.R;
 import helloandroid.ut3.mini_projet.models.Restaurant;
 import helloandroid.ut3.mini_projet.services.RestaurantsService;
 
@@ -114,14 +116,12 @@ public class MapActivity extends Fragment {
 
     @Override
     public void onResume() {
-        System.out.println("resuming");
         super.onResume();
         map.onResume();
     }
 
     @Override
     public void onPause() {
-        System.out.println("pausing");
         super.onPause();
         map.onPause();
     }
@@ -161,7 +161,6 @@ public class MapActivity extends Fragment {
         CompletableFuture<ArrayList<Restaurant>> a = r.getAllRestaurants();
         a.thenAccept((res)->{
             res.forEach((restaurant)->{
-                System.out.println(restaurant.getCoordinates().toString());
                 Marker restaurantMarker = new Marker(map);
                 restaurantMarker.setPosition(restaurant.getCoordinates());
                 restaurantMarker.setIcon(ctx.getDrawable(R.drawable.restaurant_24));

@@ -1,4 +1,4 @@
-package helloandroid.ut3.mini_projet;
+package helloandroid.ut3.mini_projet.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import helloandroid.ut3.mini_projet.R;
+import helloandroid.ut3.mini_projet.ViewPagerAdapter;
 import helloandroid.ut3.mini_projet.models.Restaurant;
 import helloandroid.ut3.mini_projet.services.RestaurantsService;
 
