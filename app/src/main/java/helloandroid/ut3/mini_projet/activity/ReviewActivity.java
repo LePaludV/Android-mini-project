@@ -76,7 +76,7 @@ public class ReviewActivity extends AppCompatActivity {
         String review = reviewInput.getText().toString();
         float rating = ratingBar.getRating();
         Date date = new Date();
-        List<String> photos = new ArrayList<String>(); // TODO : PHOTOS
+        List<String> photos = new ArrayList<String>();
         photos.add(imageName);
         Review reviewObject = new Review(date,photos,rating,restaurantId,review,username);
 

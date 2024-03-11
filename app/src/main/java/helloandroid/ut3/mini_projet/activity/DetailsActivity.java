@@ -121,7 +121,6 @@ public class DetailsActivity extends AppCompatActivity {
                 StringBuilder sb = new StringBuilder();
                 sb.append(jour).append(": ");
 
-                // Vérifier s'il y a plus d'un horaire d'ouverture pour le jour actuel
                 if (value.size() > 2) {
                     for (int i = 0; i < value.size(); i += 2) {
                         sb.append(String.format("%02d", value.get(i))).append("h - ").append(String.format("%02d", value.get(i + 1))).append("h");
