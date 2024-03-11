@@ -2,9 +2,11 @@ package helloandroid.ut3.mini_projet.activity;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -39,6 +41,7 @@ import java.util.List;
 
 import helloandroid.ut3.mini_projet.R;
 import helloandroid.ut3.mini_projet.Shaker;
+import helloandroid.ut3.mini_projet.services.PhotoService;
 
 public class DisplayImageActivity extends AppCompatActivity {
 
@@ -89,10 +92,11 @@ public class DisplayImageActivity extends AppCompatActivity {
     TextView filterInfo;
 
     Shaker s;
-
+    PhotoService photoService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        photoService= new PhotoService(getApplicationContext());
         setContentView(R.layout.activity_display_image);
         imageView = findViewById(R.id.imageView);
         filterInfo = findViewById(R.id.filterInfo);
@@ -113,13 +117,10 @@ public class DisplayImageActivity extends AppCompatActivity {
                 int action = event.getAction();
                 switch (action) {
                     case DragEvent.ACTION_DRAG_STARTED:
-                        // do nothing
                         break;
                     case DragEvent.ACTION_DRAG_ENTERED:
-                        // do nothing
                         break;
                     case DragEvent.ACTION_DRAG_EXITED:
-                        // do nothing
                         break;
                     case DragEvent.ACTION_DROP:
                         View view = (View) event.getLocalState();
@@ -202,10 +203,17 @@ public class DisplayImageActivity extends AppCompatActivity {
         try (OutputStream outputStream = getContentResolver().openOutputStream(uri)) {
             mutableBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
             Toast.makeText(this, "Image enregistrée avec succès", Toast.LENGTH_SHORT).show();
+            photoService.uploadPhoto(uri,fileName);
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("imageName", fileName);
+            setResult(Activity.RESULT_OK, resultIntent);
         } catch (IOException e) {
             Log.e(TAG, "Erreur lors de l'enregistrement de l'image", e);
             Toast.makeText(this, "Erreur lors de l'enregistrement de l'image", Toast.LENGTH_SHORT).show();
         }
+
+        finish();
+
     }
     public ColorFilter applyFilter() {
         ColorMatrix matrix = new ColorMatrix();

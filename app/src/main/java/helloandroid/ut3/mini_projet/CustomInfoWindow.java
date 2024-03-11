@@ -34,7 +34,6 @@ public class CustomInfoWindow extends MarkerInfoWindow {
 
     @Override
     public void onOpen(Object item) {
-        // Mettez à jour le contenu de votre vue ici en fonction du marqueur cliqué
         if (item instanceof Marker) {
             Marker marker = (Marker) item;
             if(restaurant == null){
@@ -50,7 +49,6 @@ public class CustomInfoWindow extends MarkerInfoWindow {
                     @Override
                     public void onClick(View v) {
                         Context context= v.getContext();
-                        System.out.println("ON CLICK");
                        context.startActivity(rs.goToDetails(context,restaurant));
                     }
                 });

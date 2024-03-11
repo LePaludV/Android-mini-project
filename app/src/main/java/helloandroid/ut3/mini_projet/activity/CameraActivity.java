@@ -2,6 +2,7 @@ package helloandroid.ut3.mini_projet.activity;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -15,6 +16,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
@@ -53,6 +56,7 @@ public class CameraActivity extends AppCompatActivity {
     private ExecutorService cameraExecutor;
 
     private Button imageCaptureButton;
+    private ActivityResultLauncher<Intent> displayImageActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,22 @@ public class CameraActivity extends AppCompatActivity {
         setContentView(R.layout.activity_camera);
         cameraView = findViewById(R.id.camera);
         imageCaptureButton = findViewById(R.id.image_capture_button);
+        displayImageActivity = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode()== Activity.RESULT_OK){
+                        Intent data = result.getData();
+                        if(data != null){
+                            String photos = data.getStringExtra("imageName");
+                            // Définissez le résultat pour MainActivity
+                            Intent resultIntent = new Intent();
+                            resultIntent.putExtra("imageName", photos);
+                            setResult(Activity.RESULT_OK, resultIntent);
+                            finish();
+                        }
+                    }
+                }
+        );
       findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,13 +134,16 @@ public class CameraActivity extends AppCompatActivity {
                         }
                         if (tempFile != null) {
                             Uri imageUri = FileProvider.getUriForFile(getApplicationContext(), getPackageName() + ".fileprovider", tempFile);
+
+
                             intent.putExtra("imageUri", imageUri);
-                            startActivity(intent);
+                            displayImageActivity.launch(intent);
                         } else {
                             Toast.makeText(getApplicationContext(), "Failed to save image", Toast.LENGTH_SHORT);
                         }
                         image.close();
                     }
+
 
                     @Override
                     public void onError(@NonNull ImageCaptureException exception) {
@@ -199,7 +222,6 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private Bitmap toBitmap(ImageProxy image) {
-        System.out.println(image);
         if (image.getFormat() != ImageFormat.JPEG) {
             Log.e(TAG, "Image format is not JPEG");
             return null;

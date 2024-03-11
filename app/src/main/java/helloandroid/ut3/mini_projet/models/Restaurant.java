@@ -247,7 +247,10 @@ public class Restaurant {
             }
 
             if (nextOpeningOrClosingTime.isEmpty()) {
-                nextOpeningOrClosingTime = "Ouvre demain à " + convertLongToTime(hours.get(0));
+                if(hours.size()==0){
+                    nextOpeningOrClosingTime ="Actuellement fermé";
+                }
+                else {nextOpeningOrClosingTime = "Ouvre demain à " + convertLongToTime(hours.get(0));}
             }
         }
 

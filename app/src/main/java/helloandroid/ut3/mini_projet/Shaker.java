@@ -13,7 +13,7 @@ public class Shaker implements SensorEventListener {
 
     private SensorManager sensorManager;
     private Vibrator vibrator;
-    private float shakeThreshold = 10.0f; // Seuil de détection de secousse
+    private float shakeThreshold = 10.0f;
 
     private DisplayImageActivity displayImageActivity;
 
@@ -44,10 +44,8 @@ public class Shaker implements SensorEventListener {
             float accelerationSquareRoot = (x * x + y * y + z * z) / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
 
             if (accelerationSquareRoot >= shakeThreshold) {
-                // Secousse détectée
-                vibrator.vibrate(100); // Fait vibrer le téléphone pendant 100 millisecondes
+                vibrator.vibrate(100);
                 displayImageActivity.onShakeDetected();
-                // Ajoutez ici le code à exécuter lorsqu'une secousse est détectée
             }
         }
     }
