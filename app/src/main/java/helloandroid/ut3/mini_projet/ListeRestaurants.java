@@ -18,6 +18,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -82,7 +83,8 @@ public class ListeRestaurants extends Fragment {
             RatingBar ratingBar = view.findViewById(R.id.ratingBar);
             ratingBar.setRating(restaurant.getNote());
 
-            if (restaurant.isOpen()) {
+            Calendar calendar = Calendar.getInstance();
+            if (restaurant.isOpen(calendar)) {
                 textViewRestaurantStatus.setText("Ouvert actuellement : " + hoursString);
                 textViewRestaurantStatus.setTextColor(ContextCompat.getColor(getContext(), R.color.green));
             } else {

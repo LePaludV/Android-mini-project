@@ -70,8 +70,10 @@ public class Restaurant {
         this.note = note;
     }
 
-    public boolean isOpen() {
-        Calendar calendar = Calendar.getInstance();
+    public boolean isOpen(Calendar calendar){
+      return isOpenHoraire(calendar,horaires);
+    }
+    public static boolean isOpenHoraire(Calendar calendar,Map<String, ArrayList<Long>>  horaires) {
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
 
@@ -163,8 +165,8 @@ public class Restaurant {
         StringBuilder hoursString = new StringBuilder();
 
         for (int i = 0; i < hours.size(); i += 2) {
-            Long openingHour = hours.get(i);
-            Long closingHour = hours.get(i + 1);
+            Long openingHour = hours.get(i)==24?00:hours.get(i);
+            Long closingHour = hours.get(i+1)==24?00:hours.get(i+1);;
 
             if (i > 0) {
                 hoursString.append(", ");
@@ -214,8 +216,8 @@ public class Restaurant {
         } else {
             hours = new ArrayList<>();
         }
-
-        boolean isOpen = isOpen();
+        Calendar cal = Calendar.getInstance();
+        boolean isOpen = isOpen(cal);
         String nextOpeningOrClosingTime = "";
 
         if (isOpen) {

@@ -19,6 +19,8 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,11 +34,15 @@ import helloandroid.ut3.mini_projet.ConfirmReservation;
 import helloandroid.ut3.mini_projet.DatePickerFragment;
 import helloandroid.ut3.mini_projet.R;
 import helloandroid.ut3.mini_projet.TimePickerFragment;
+import helloandroid.ut3.mini_projet.models.Restaurant;
 
+import java.util.TimeZone;
 @SuppressLint("MissingInflatedId")
+
 public class ReservationActivity extends AppCompatActivity {
 
     private Map<String, ArrayList<Long>> horaires;
+    private Restaurant restaurant;
 
     private CalendarView calendarView;
     private LinearLayout timeLayout;
@@ -90,10 +96,11 @@ public class ReservationActivity extends AppCompatActivity {
                 TimePickerFragment fragment = TimePickerFragment.newInstance(new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+
                         String selectedTime = String.format("%02d:%02d", hourOfDay, minute);
                         TextView selectedTimeTextView = findViewById(R.id.selected_time);
-                        selectedTimeTextView.setText(selectedTime);
-                    }
+                        selectedTimeTextView.setText(selectedTime);}
+
                 });
                 fragment.show(getSupportFragmentManager(), "time_picker");
             }
@@ -103,12 +110,18 @@ public class ReservationActivity extends AppCompatActivity {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getFormData();
+                String selectedTime = ((TextView) findViewById(R.id.selected_time)).getText().toString();
+                String selectedDate = ((TextView) findViewById(R.id.selected_date)).getText().toString();
+                System.out.println(selectedDate+"_"+selectedTime);
+                if (!(shouldBeOpen(selectedTime, selectedDate))) {
+                    Toast.makeText(ReservationActivity.this, "Le restaurant est fermé a cette heure là.", Toast.LENGTH_LONG).show();
+                }
+                else getFormData();
             }
         });
 
-        Button returnButton = findViewById(R.id.button_return);
-        returnButton.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton btnBack = findViewById(R.id.backButton);
+        btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
@@ -188,6 +201,23 @@ public class ReservationActivity extends AppCompatActivity {
         return true;
     }
 
+    private boolean shouldBeOpen(String selectedTime, String selectedDate) {
+
+        String dateTimeString = selectedTime+", "+selectedDate;
+        System.out.println(dateTimeString);
+        String format = "HH:mm, dd/MM/yyyy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.getDefault());
+        Calendar calendar = Calendar.getInstance();
+        try {
+            calendar.setTime(simpleDateFormat.parse(dateTimeString));
+            calendar.setTimeZone(TimeZone.getDefault());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return Restaurant.isOpenHoraire(calendar,horaires);
+
+    }
+
     private void showErrors(List<String> errors) {
         if (!errors.isEmpty()) {
             for (String error : errors){
@@ -199,24 +229,25 @@ public class ReservationActivity extends AppCompatActivity {
 
     private void getFormData() {
         if (validateForm()) {
-            EditText lastNameEditText = findViewById(R.id.lastName);
             TextView selectedDateTextView = findViewById(R.id.selected_date);
             TextView selectedTimeTextView = findViewById(R.id.selected_time);
-            NumberPicker peopleNumberPicker = findViewById(R.id.number_picker);
+                EditText lastNameEditText = findViewById(R.id.lastName);
+                NumberPicker peopleNumberPicker = findViewById(R.id.number_picker);
 
-            String lastName = lastNameEditText.getText().toString();
-            String selectedDate = selectedDateTextView.getText().toString();
-            String selectedTime = selectedTimeTextView.getText().toString();
-            int peopleNumber = peopleNumberPicker.getValue();
+                String lastName = lastNameEditText.getText().toString();
+                String selectedDate = selectedDateTextView.getText().toString();
+                String selectedTime = selectedTimeTextView.getText().toString();
+                int peopleNumber = peopleNumberPicker.getValue();
 
-            Intent intent = new Intent(this, ConfirmReservation.class);
-            intent.putExtra("LastName", lastName);
-            intent.putExtra("Date", selectedDate);
-            intent.putExtra("Time", selectedTime);
-            intent.putExtra("People", peopleNumber);
+                Intent intent = new Intent(this, ConfirmReservation.class);
+                intent.putExtra("LastName", lastName);
+                intent.putExtra("Date", selectedDate);
+                intent.putExtra("Time", selectedTime);
+                intent.putExtra("People", peopleNumber);
 
-            startActivity(intent);
-        }
+                startActivity(intent);
+            }
+
     }
 
 
