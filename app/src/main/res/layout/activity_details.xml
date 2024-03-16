@@ -64,8 +64,9 @@
                         <TextView
                             android:id="@+id/restaurantType"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_weight="3"
+                            android:gravity="center_vertical"
                             android:text="RestaurantType" />
 
                     </LinearLayout>
@@ -94,8 +95,9 @@
                         <TextView
                             android:id="@+id/restaurantAddress"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_weight="3"
+                            android:gravity="center_vertical"
                             android:text="restaurantAddress" />
                     </LinearLayout>
 
@@ -116,7 +118,7 @@
                     <ImageView
                         android:id="@+id/imageView6"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:src="@drawable/baseline_description_24" />
@@ -124,8 +126,9 @@
                     <TextView
                         android:id="@+id/restaurantDescription"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="3"
+                        android:gravity="center_vertical"
                         android:text="restaurantDescription" />
                 </LinearLayout>
 
@@ -145,17 +148,25 @@
 
                     <ImageView
                         android:id="@+id/imageView3"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:src="@drawable/baseline_clock_24" />
 
                     <TextView
                         android:id="@+id/restaurantHoraire"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="3"
+                        android:gravity="center_vertical"
                         android:text="restaurantHoraire" />
+                    <ImageView
+                        android:id="@+id/imageViewTime"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:src="@drawable/time_and_calendar" />
                 </LinearLayout>
 
                 <View
@@ -181,8 +192,9 @@
                     <TextView
                         android:id="@+id/restaurantNote"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="3"
+                        android:gravity="center_vertical"
                         android:text="TextView" />
                 </LinearLayout>
 

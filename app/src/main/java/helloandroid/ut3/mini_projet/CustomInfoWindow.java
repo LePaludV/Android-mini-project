@@ -5,9 +5,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
+
+import java.util.Calendar;
 
 import helloandroid.ut3.mini_projet.models.Restaurant;
 import helloandroid.ut3.mini_projet.services.RestaurantsService;
@@ -42,7 +46,17 @@ public class CustomInfoWindow extends MarkerInfoWindow {
             }
             else{
                 title.setText(restaurant.getNom());
-                description.setText(restaurant.getDescription()+"\n"+restaurant.getHoraires());
+                TextView horaires = mView.findViewById(R.id.horaires);
+                String hoursString = restaurant.getHoursString();
+                Calendar calendar = Calendar.getInstance();
+                if (restaurant.isOpen(calendar)) {
+                    horaires.setText("Ouvert actuellement : " + hoursString);
+                    horaires.setTextColor(ContextCompat.getColor(mView.getContext(), R.color.green));
+                } else {
+                    horaires.setText("Fermé actuellement : " + hoursString);
+                    horaires.setTextColor( ContextCompat.getColor(mView.getContext(), R.color.red));
+                }
+                description.setText(restaurant.getDescription());
                 address.setText(restaurant.getAddress());
                 btn.setVisibility(View.VISIBLE);
                 btn.setOnClickListener(new View.OnClickListener() {

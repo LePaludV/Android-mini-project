@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
         viewPager2 = findViewById(R.id.view_pager2);
         viewPagerAdapter = new ViewPagerAdapter(this,new RestaurantsService());
         viewPager2.setOffscreenPageLimit(2);
+        viewPager2.setUserInputEnabled(false);
+
         viewPager2.setAdapter(viewPagerAdapter);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
