@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,7 +47,13 @@ public class ReviewActivity extends AppCompatActivity {
         usernameInput = findViewById(R.id.usernameInput);
         reviewInput = findViewById(R.id.reviewInput);
         ratingBar = findViewById(R.id.ratingBar);
-
+        FloatingActionButton btnBack = findViewById(R.id.backButton);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         findViewById(R.id.addReviewImageBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

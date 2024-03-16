@@ -5,7 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import helloandroid.ut3.mini_projet.activity.DetailsActivity;
+import helloandroid.ut3.mini_projet.activity.MainActivity;
+import helloandroid.ut3.mini_projet.activity.ReservationActivity;
 
 public class ConfirmReservation extends AppCompatActivity {
 
@@ -29,6 +36,15 @@ public class ConfirmReservation extends AppCompatActivity {
                 lastName, date, time, peopleNumber, people);
 
         confirmText.setText(confirmedMessage);
+
+        FloatingActionButton btnBack = findViewById(R.id.homeButton);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 

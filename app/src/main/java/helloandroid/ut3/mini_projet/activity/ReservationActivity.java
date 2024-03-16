@@ -19,6 +19,8 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -108,7 +110,6 @@ public class ReservationActivity extends AppCompatActivity {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("ON CONFIRME ");
                 String selectedTime = ((TextView) findViewById(R.id.selected_time)).getText().toString();
                 String selectedDate = ((TextView) findViewById(R.id.selected_date)).getText().toString();
                 System.out.println(selectedDate+"_"+selectedTime);
@@ -119,8 +120,8 @@ public class ReservationActivity extends AppCompatActivity {
             }
         });
 
-        Button returnButton = findViewById(R.id.button_return);
-        returnButton.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton btnBack = findViewById(R.id.backButton);
+        btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
