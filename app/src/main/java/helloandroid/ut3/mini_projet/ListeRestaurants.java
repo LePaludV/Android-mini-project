@@ -46,7 +46,6 @@ public class ListeRestaurants extends Fragment {
         CompletableFuture<ArrayList<Restaurant>> a = this.rs.getAllRestaurants();
         a.thenAccept((res)->{
             restaurants.addAll(res);
-            // Créez un adaptateur ArrayAdapter pour lier la liste à la ListView
             RestaurantAdapter adapter = new RestaurantAdapter(requireContext(), R.layout.restaurant_item_layout, restaurants, this.rs);
             restaurantListView.setAdapter(adapter);
         });

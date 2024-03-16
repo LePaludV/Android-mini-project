@@ -8,7 +8,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -16,7 +18,9 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.io.Serializable;
@@ -25,20 +29,21 @@ import java.util.List;
 import java.util.Map;
 
 import helloandroid.ut3.mini_projet.R;
+import helloandroid.ut3.mini_projet.models.Review;
 import helloandroid.ut3.mini_projet.services.PhotoService;
+import helloandroid.ut3.mini_projet.services.ReviewService;
 
 public class DetailsActivity extends AppCompatActivity {
 
     String restaurantId;
 
-    private Button btnAvis;
+    PhotoService photoService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        PhotoService photoService = new PhotoService(getApplicationContext());
-
+        photoService = new PhotoService(getApplicationContext());
         Intent intent = getIntent();
         String[] photos = intent.getStringArrayExtra("Photos");
         Bundle extras = intent.getExtras();
@@ -63,8 +68,13 @@ public class DetailsActivity extends AppCompatActivity {
         nextHoraire.setText(intent.getStringExtra("HoraireDuJour"));
         note.setText(intent.getStringExtra("Note"));
 
-
-
+        Button showReviewsButton = findViewById(R.id.showReviewsButton);
+        showReviewsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadReviews();
+            }
+        });
 
         FloatingActionButton btnBack = findViewById(R.id.backButton);
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -94,6 +104,8 @@ public class DetailsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
     }
 
 
@@ -155,6 +167,54 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
 
+    public void loadReviews(){
+        ReviewService reviewService = new ReviewService();
+        LinearLayout reviewsContainer = findViewById(R.id.reviewsContainer);
+        reviewService.getAllReviewsByRestaurantId(restaurantId, new ReviewService.OnReviewsCallback() {
 
+            @Override
+            public void onSuccess(List<Review> reviews) {
+                System.out.println(reviewsContainer.getChildCount());
 
+                findViewById(R.id.showReviewsButton).setVisibility(View.INVISIBLE);
+                if (!reviews.isEmpty()) {
+                    for(Review review: reviews){
+                        LayoutInflater inflater = getLayoutInflater();
+                        View reviewView = inflater.inflate(R.layout.review_item, reviewsContainer, false);
+
+                        TextView userNameTextView = reviewView.findViewById(R.id.userNameTextView);
+                        TextView commentTextView = reviewView.findViewById(R.id.commentTextView);
+                        ImageView userPicture = reviewView.findViewById(R.id.userImageView);
+                        RatingBar note = reviewView.findViewById(R.id.ratingBar);
+                        System.out.println(review.getUsername());
+                        userNameTextView.setText(review.getUsername());
+                        commentTextView.setText(review.getReview());
+                        List<String> photos = review.getPhotos();
+                        if (photos != null && !photos.isEmpty() && photos.get(0) != null && !photos.get(0).isEmpty()) {
+                            photoService.setPhoto(photos.get(0), userPicture);
+                        }
+
+                        note.setRating(review.getRating());
+
+                        reviewsContainer.addView(reviewView);}
+                } else {
+                    LinearLayout reviewLayout = new LinearLayout(getApplicationContext());
+                    reviewLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    reviewLayout.setOrientation(LinearLayout.VERTICAL);
+                    TextView userNameTextView = new TextView(getApplicationContext());
+                    userNameTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    userNameTextView.setText("Pas encore d'avis, soyez le premier !");
+                    userNameTextView.setTextSize(18);
+                    userNameTextView.setTypeface(null, Typeface.BOLD);
+                    reviewLayout.addView(userNameTextView);
+                    reviewsContainer.addView(reviewLayout);
+                }
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                System.out.println("Error fetching reviews: " + errorMessage);
+            }
+        });
+    }
 }

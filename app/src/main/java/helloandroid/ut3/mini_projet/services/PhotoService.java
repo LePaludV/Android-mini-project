@@ -7,6 +7,8 @@ import android.provider.MediaStore;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -35,6 +37,7 @@ public class PhotoService {
     public void setPhotoFromStorage(String id, ImageView image){
         File imagesDirectory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "InsTable");
         File imageFile = new File(imagesDirectory, id);
+
         if (imageFile.exists()) {
             Uri imageUri = Uri.fromFile(imageFile);
             Glide.with(this.ctx)

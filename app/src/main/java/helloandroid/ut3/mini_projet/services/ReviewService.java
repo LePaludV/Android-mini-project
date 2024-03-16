@@ -45,14 +45,26 @@ public class ReviewService {
         }).addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    public interface OnReviewCallback {
-        void onSuccess(Review review);
-        void onFailure(String errorMessage);
-    }
+    public void getAllReviewsByRestaurantId(String restaurantId, final OnReviewsCallback callback) {
+        Task<QuerySnapshot> task = reviewsCollection.whereEqualTo("restaurant_id", restaurantId).get();
 
+        task.addOnSuccessListener(queryDocumentSnapshots -> {
+            List<Review> reviews = new ArrayList<>();
+            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                Review review = documentSnapshot.toObject(Review.class);
+                reviews.add(review);
+            }
+            callback.onSuccess(reviews);
+        }).addOnFailureListener(e -> callback.onFailure(e.getMessage()));
+    }
     public interface OnReviewsCallback {
         void onSuccess(List<Review> reviews);
         void onFailure(String errorMessage);
     }
 
+
+    public interface OnReviewCallback {
+        void onSuccess(Review review);
+        void onFailure(String errorMessage);
+    }
 }
