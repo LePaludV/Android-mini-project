@@ -57,15 +57,14 @@ public class ReviewService {
             callback.onSuccess(reviews);
         }).addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
-
-    public interface OnReviewCallback {
-        void onSuccess(Review review);
-        void onFailure(String errorMessage);
-    }
-
     public interface OnReviewsCallback {
         void onSuccess(List<Review> reviews);
         void onFailure(String errorMessage);
     }
 
+
+    public interface OnReviewCallback {
+        void onSuccess(Review review);
+        void onFailure(String errorMessage);
+    }
 }

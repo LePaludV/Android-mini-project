@@ -13,14 +13,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/restaurantImage"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:contentDescription="restaurant image"
-            android:scaleType="centerCrop"
-            app:srcCompat="@drawable/googleg_standard_color_18" />
-
         <ScrollView
             android:id="@+id/scrollView2"
             android:layout_width="match_parent"
@@ -31,6 +23,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="20dp">
+
+                <ImageView
+                    android:id="@+id/restaurantImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:contentDescription="restaurant image"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/googleg_standard_color_18" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -227,7 +227,27 @@
 
                 </LinearLayout>
 
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/showReviewsButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/button_background"
+                    android:stateListAnimator="@null"
+                    android:text="⬇️Afficher les avis⬇️"
+                    android:textColor="#FFFFFF" />
+
+                <LinearLayout
+                    android:id="@+id/reviewsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+
+                </LinearLayout>
             </LinearLayout>
+
         </ScrollView>
         </LinearLayout>
 
