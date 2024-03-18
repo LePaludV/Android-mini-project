@@ -73,13 +73,14 @@ public class MapActivity extends Fragment {
     }
     private void configureMap(GeoPoint restaurantCoordinates) {
         mapController = map.getController();
-        updateUserLocation();
         GeoPoint startPoint = new GeoPoint(43.60, 1.43);
         mapController.setZoom(18.00);
         if (centerOnRestaurant && restaurantCoordinates != null) {
             mapController.setCenter(restaurantCoordinates);
+        }else{
+            updateUserLocation();
+
         }
-        else mapController.setCenter(startPoint);
         generateMarker(map, startPoint);
     }
     @Override

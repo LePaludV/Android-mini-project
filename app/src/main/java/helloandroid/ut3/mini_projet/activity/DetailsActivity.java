@@ -3,11 +3,8 @@ package helloandroid.ut3.mini_projet.activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.GeoPoint;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -20,6 +17,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -32,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 import helloandroid.ut3.mini_projet.R;
-import helloandroid.ut3.mini_projet.ViewPagerAdapter;
 import helloandroid.ut3.mini_projet.models.Restaurant;
 import helloandroid.ut3.mini_projet.models.Review;
 import helloandroid.ut3.mini_projet.services.PhotoService;
@@ -120,6 +117,7 @@ public class DetailsActivity extends AppCompatActivity {
             startActivity(intent);
         }
     });
+
     }
 
 
@@ -205,7 +203,16 @@ public class DetailsActivity extends AppCompatActivity {
                         }
 
                         note.setRating(review.getRating());
-
+                        FrameLayout frameLayout = reviewView.findViewById(R.id.frameLayout);
+                        frameLayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (photos != null && !photos.isEmpty() && photos.get(0) != null && !photos.get(0).isEmpty()) {
+                                    showImageDialog(photos.get(0));
+                                }
+;
+                            }
+                        });
                         reviewsContainer.addView(reviewView);}
                 } else {
                     LinearLayout reviewLayout = new LinearLayout(getApplicationContext());
@@ -227,4 +234,23 @@ public class DetailsActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void showImageDialog(String image) {
+        Dialog dialog = new Dialog(DetailsActivity.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        dialog.setContentView(R.layout.dialog_image);
+
+        ImageView dialogImageView = dialog.findViewById(R.id.dialogImageView);
+        photoService.setPhoto(image, dialogImageView);
+
+        dialogImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+
 }
