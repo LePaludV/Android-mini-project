@@ -20,6 +20,7 @@
 - CameraX pour la prise de photo et l'accès à l'appareil photo
 - Glide pour l'affichage des images
 - OSMDROID et le provider MAPNIK pour l'affichage de la carte
+- Utilisation de la dépendance play-services-location pour une localisation précise
 
 ## Description des données
 
