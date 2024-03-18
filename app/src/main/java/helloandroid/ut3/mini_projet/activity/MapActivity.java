@@ -51,6 +51,7 @@ public class MapActivity extends Fragment {
     IMapController mapController;
     private RestaurantsService rs;
     private boolean centerOnRestaurant = false;
+    Marker userMarker;
     public MapActivity(){
         this.rs = new RestaurantsService();
     }
@@ -72,16 +73,14 @@ public class MapActivity extends Fragment {
         requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
     }
     private void configureMap(GeoPoint restaurantCoordinates) {
+        GeoPoint defaultPosition = new GeoPoint(43.60, 1.43);
         mapController = map.getController();
-        GeoPoint startPoint = new GeoPoint(43.60, 1.43);
         mapController.setZoom(18.00);
+        generateMarker(map);
+        updateUserLocation();
         if (centerOnRestaurant && restaurantCoordinates != null) {
             mapController.setCenter(restaurantCoordinates);
-        }else{
-            updateUserLocation();
-
         }
-        generateMarker(map, startPoint);
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -140,10 +139,10 @@ public class MapActivity extends Fragment {
     }
 
 
-    private void generateMarker(MapView map, GeoPoint startPoint) {
+    private void generateMarker(MapView map) {
         //user
-        Marker userMarker = new Marker(map);
-        userMarker.setPosition(startPoint);
+        userMarker = new Marker(map);
+        //userMarker.setPosition(startPoint);
         userMarker.setIcon( ctx.getDrawable(R.drawable.baseline_gps_fixed_24));
         userMarker.setInfoWindow(new CustomInfoWindow(R.layout.custom_info_window, map,null,rs));
         userMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
@@ -177,11 +176,19 @@ public class MapActivity extends Fragment {
             locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
+                    System.out.println(centerOnRestaurant);
+                    GeoPoint position;
                     if (location != null) {
-                        GeoPoint userLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
-                        mapController.setCenter(userLocation);
-                        generateMarker(map, userLocation);
+                        position=(new GeoPoint(location.getLatitude(), location.getLongitude()));
                     }
+                    else{
+                        position= new GeoPoint(43.60, 1.43);
+                    }
+                    if(!centerOnRestaurant){
+                        mapController.setCenter(position);
+                    }
+                    centerOnRestaurant=false;
+                    userMarker.setPosition(position);
                 }
             });
         } else {
