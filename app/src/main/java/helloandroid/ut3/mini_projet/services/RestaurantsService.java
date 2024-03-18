@@ -67,19 +67,11 @@ public class RestaurantsService {
 
     public Intent goToDetails(Context ctx, Restaurant r) {
         Intent intent = new Intent(ctx, DetailsActivity.class);
-        intent.putExtra("Id", r.getId());
-        intent.putExtra("Titre", r.getNom());
-        intent.putExtra("Type", r.getType());
-        intent.putExtra("Adresse", r.getAddress());
-        intent.putExtra("Description", r.getDescription());
-        intent.putExtra("HoraireDuJour", r.getNextOpeningOrClosingTime());
-        intent.putExtra("Note", Float.toString(r.getNote()));
-
         Bundle bundle = new Bundle();
-        bundle.putSerializable("Horaires", (Serializable) r.getHoraires());
+        intent.putExtra("HoraireDuJour", r.getNextOpeningOrClosingTime());
+        bundle.putSerializable("Restaurant", r);
         intent.putExtras(bundle);
 
-        intent.putExtra("Photos", r.getPhotos());
         return intent;
     }
 

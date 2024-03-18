@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:tooltipText="clic to see on map">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -78,6 +79,7 @@
                         android:background="@color/gray" />
 
                     <LinearLayout
+                        android:id="@+id/position"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="25dp"
@@ -86,7 +88,7 @@
 
                         <ImageView
                             android:id="@+id/imageView"
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
@@ -99,6 +101,14 @@
                             android:layout_weight="3"
                             android:gravity="center_vertical"
                             android:text="restaurantAddress" />
+
+                        <ImageView
+                            android:id="@+id/imageView7"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            app:srcCompat="@android:drawable/ic_menu_directions" />
+
                     </LinearLayout>
 
                 </LinearLayout>
@@ -130,6 +140,7 @@
                         android:layout_weight="3"
                         android:gravity="center_vertical"
                         android:text="restaurantDescription" />
+
                 </LinearLayout>
 
                 <View
@@ -160,6 +171,7 @@
                         android:layout_weight="3"
                         android:gravity="center_vertical"
                         android:text="restaurantHoraire" />
+
                     <ImageView
                         android:id="@+id/imageViewTime"
                         android:layout_width="0dp"
@@ -249,17 +261,17 @@
             </LinearLayout>
 
         </ScrollView>
-        </LinearLayout>
+    </LinearLayout>
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/backButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/baseline_arrow_back_24"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp" />
+        app:srcCompat="@drawable/baseline_arrow_back_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
