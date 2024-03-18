@@ -2,6 +2,7 @@ package helloandroid.ut3.mini_projet.models;
 
 import com.google.firebase.firestore.GeoPoint;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -9,13 +10,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class Restaurant {
+public class Restaurant implements Serializable {
 
     String id;
     String nom;
     String address;
     String[] photos;
-    GeoPoint coordinates;
+    CustomGeoPoint coordinates;
     String description;
     Map<String, ArrayList<Long>> horaires;
     String type;
@@ -63,7 +64,7 @@ public class Restaurant {
         this.nom = nom;
         this.address = address;
         this.photos = photos;
-        this.coordinates = coordinates;
+        this.coordinates = new CustomGeoPoint(coordinates.getLatitude(), coordinates.getLongitude());
         this.description = description;
         this.horaires = horaires;
         this.type = type;
@@ -260,7 +261,8 @@ public class Restaurant {
     }
 
     private String convertLongToTime(Long hour) {
-        return hour + "h";
+        if(hour==24f) return "00h";
+    return hour + "h";
     }
 
     public List<String> getOpenDays() {

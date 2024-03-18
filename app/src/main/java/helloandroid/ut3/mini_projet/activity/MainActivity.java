@@ -43,6 +43,15 @@ public class MainActivity extends AppCompatActivity {
         viewPager2.setUserInputEnabled(false);
 
         viewPager2.setAdapter(viewPagerAdapter);
+        if (getIntent().getBooleanExtra("open_map_activity", false)) {
+            Restaurant selectedRestaurant = (Restaurant) getIntent().getSerializableExtra("selected_restaurant");
+            if (selectedRestaurant != null) {
+                viewPagerAdapter.setSelectedRestaurant(selectedRestaurant);
+                viewPager2.setCurrentItem(1);
+                tabLayout.getTabAt(1).select();
+            }
+        }
+
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {

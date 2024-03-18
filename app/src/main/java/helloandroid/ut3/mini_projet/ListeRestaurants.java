@@ -87,7 +87,8 @@ public class ListeRestaurants extends Fragment {
                 textViewRestaurantStatus.setText("Ouvert actuellement : " + hoursString);
                 textViewRestaurantStatus.setTextColor(ContextCompat.getColor(getContext(), R.color.green));
             } else {
-                textViewRestaurantStatus.setText("Fermé actuellement : " + hoursString);
+                String txt= "Fermé actuellement"+(!hoursString.isEmpty() ? ": "+hoursString:"");
+                textViewRestaurantStatus.setText(txt);
                 textViewRestaurantStatus.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
             }
 

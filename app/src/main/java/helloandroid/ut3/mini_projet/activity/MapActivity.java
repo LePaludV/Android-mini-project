@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -42,8 +48,9 @@ public class MapActivity extends Fragment {
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private MapView map = null;
     private Context ctx = null;
+    IMapController mapController;
     private RestaurantsService rs;
-
+    private boolean centerOnRestaurant = false;
     public MapActivity(){
         this.rs = new RestaurantsService();
     }
@@ -64,33 +71,22 @@ public class MapActivity extends Fragment {
     private void requestLocationPermissions() {
         requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
     }
-    private void configureMap() {
-        // Initialize map components here, considering the location permissions are granted
-        IMapController mapController = map.getController();
-        LocationManager locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
-
-        if (ActivityCompat.checkSelfPermission(ctx, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(ctx, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Handle the situation where permissions are not granted.
-            return;
-        }
-
-        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+    private void configureMap(GeoPoint restaurantCoordinates) {
+        mapController = map.getController();
+        updateUserLocation();
         GeoPoint startPoint = new GeoPoint(43.60, 1.43);
-
-        if (location != null) {
-            startPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-        }
         mapController.setZoom(18.00);
-        mapController.setCenter(startPoint);
+        if (centerOnRestaurant && restaurantCoordinates != null) {
+            mapController.setCenter(restaurantCoordinates);
+        }
+        else mapController.setCenter(startPoint);
         generateMarker(map, startPoint);
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, configure the map
-                configureMap();
+                configureMap(null);
             } else {
                 // Permission denied, handle accordingly (e.g., show a message or disable location-related features)
             }
@@ -104,13 +100,29 @@ public class MapActivity extends Fragment {
         ctx = getContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         Configuration.getInstance().setUserAgentValue(ctx.getPackageName());
+        Bundle arguments = getArguments();
+        GeoPoint restaurantCoordinates=null;
+        if (arguments != null) {
+        Restaurant restaurant= (Restaurant) getArguments().getSerializable("Restaurant");
+        if(restaurant!=null){
+            centerOnRestaurant = true;
+            restaurantCoordinates = restaurant.getCoordinates();
+        }}
         map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
         map.setMultiTouchControls(true);
         if (hasLocationPermissions()) {
-            configureMap();
+            configureMap(restaurantCoordinates);
         } else {
             requestLocationPermissions();
         }
+
+        Button updateButton = view.findViewById(R.id.updateButton);
+        updateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateUserLocation();
+            }
+        });
     }
 
 
@@ -124,26 +136,6 @@ public class MapActivity extends Fragment {
     public void onPause() {
         super.onPause();
         map.onPause();
-    }
-
-
-
-
-    private void requestPermissionsIfNecessary(String[] permissions) {
-        ArrayList<String> permissionsToRequest = new ArrayList<>();
-        for (String permission : permissions) {
-            if (ContextCompat.checkSelfPermission(ctx, permission)
-                    != PackageManager.PERMISSION_GRANTED) {
-                // Permission is not granted
-                permissionsToRequest.add(permission);
-            }
-        }
-        if (permissionsToRequest.size() > 0) {
-            ActivityCompat.requestPermissions(
-                    this.getActivity(),
-                    permissionsToRequest.toArray(new String[0]),
-                    REQUEST_PERMISSIONS_REQUEST_CODE);
-        }
     }
 
 
@@ -172,4 +164,29 @@ public class MapActivity extends Fragment {
         });
 
     }
+    private void updateUserLocation() {
+        if (hasLocationPermissions()) {
+            FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+
+            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+
+            Task<Location> locationTask = fusedLocationClient.getLastLocation();
+            locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        GeoPoint userLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
+                        mapController.setCenter(userLocation);
+                        generateMarker(map, userLocation);
+                    }
+                }
+            });
+        } else {
+            requestLocationPermissions();
+        }
+    }
+
+
 }

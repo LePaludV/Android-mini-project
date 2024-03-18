@@ -112,7 +112,6 @@ public class ReservationActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String selectedTime = ((TextView) findViewById(R.id.selected_time)).getText().toString();
                 String selectedDate = ((TextView) findViewById(R.id.selected_date)).getText().toString();
-                System.out.println(selectedDate+"_"+selectedTime);
                 if (!(shouldBeOpen(selectedTime, selectedDate))) {
                     Toast.makeText(ReservationActivity.this, "Le restaurant est fermé a cette heure là.", Toast.LENGTH_LONG).show();
                 }
@@ -204,7 +203,6 @@ public class ReservationActivity extends AppCompatActivity {
     private boolean shouldBeOpen(String selectedTime, String selectedDate) {
 
         String dateTimeString = selectedTime+", "+selectedDate;
-        System.out.println(dateTimeString);
         String format = "HH:mm, dd/MM/yyyy";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.getDefault());
         Calendar calendar = Calendar.getInstance();

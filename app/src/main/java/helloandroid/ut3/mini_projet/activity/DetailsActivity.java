@@ -3,8 +3,11 @@ package helloandroid.ut3.mini_projet.activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.GeoPoint;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -29,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 
 import helloandroid.ut3.mini_projet.R;
+import helloandroid.ut3.mini_projet.ViewPagerAdapter;
+import helloandroid.ut3.mini_projet.models.Restaurant;
 import helloandroid.ut3.mini_projet.models.Review;
 import helloandroid.ut3.mini_projet.services.PhotoService;
 import helloandroid.ut3.mini_projet.services.ReviewService;
@@ -36,8 +41,9 @@ import helloandroid.ut3.mini_projet.services.ReviewService;
 public class DetailsActivity extends AppCompatActivity {
 
     String restaurantId;
-
+    Restaurant restaurant;
     PhotoService photoService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +51,6 @@ public class DetailsActivity extends AppCompatActivity {
 
         photoService = new PhotoService(getApplicationContext());
         Intent intent = getIntent();
-        String[] photos = intent.getStringArrayExtra("Photos");
         Bundle extras = intent.getExtras();
         Map<String, ArrayList<Long>> horaires = (Map<String, ArrayList<Long>>) extras.getSerializable("Horaires");
 
@@ -57,16 +62,17 @@ public class DetailsActivity extends AppCompatActivity {
         TextView nextHoraire = findViewById(R.id.restaurantHoraire);
         TextView note = findViewById(R.id.restaurantNote);
 
-
-        restaurantId = intent.getStringExtra("Id");
+        restaurant= (Restaurant) intent.getExtras().getSerializable("Restaurant");
+        restaurantId = restaurant.getId();
+        String[] photos =restaurant.getPhotos();
 
         photoService.setPhoto(photos[0],image);
-        title.setText(intent.getStringExtra("Titre"));
-        type.setText(intent.getStringExtra("Type"));
-        address.setText(intent.getStringExtra("Adresse"));
-        desc.setText(intent.getStringExtra("Description"));
+        title.setText(restaurant.getNom());
+        type.setText(restaurant.getType());
+        address.setText(restaurant.getAddress());
+        desc.setText(restaurant.getDescription());
         nextHoraire.setText(intent.getStringExtra("HoraireDuJour"));
-        note.setText(intent.getStringExtra("Note"));
+        note.setText(String.valueOf(restaurant.getNote()));
 
         Button showReviewsButton = findViewById(R.id.showReviewsButton);
         showReviewsButton.setOnClickListener(new View.OnClickListener() {
@@ -105,7 +111,15 @@ public class DetailsActivity extends AppCompatActivity {
             }
         });
 
-
+    findViewById(R.id.position).setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(DetailsActivity.this, MainActivity.class);
+            intent.putExtra("selected_restaurant", restaurant);
+            intent.putExtra("open_map_activity", true);
+            startActivity(intent);
+        }
+    });
     }
 
 
@@ -120,8 +134,7 @@ public class DetailsActivity extends AppCompatActivity {
         }
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
 
-        Bundle extras = getIntent().getExtras();
-        Map<String, ArrayList<Long>> horaires = (Map<String, ArrayList<Long>>) extras.getSerializable("Horaires");
+        Map<String, ArrayList<Long>> horaires =restaurant.getHoraires();
 
         List<String> horaireItems = new ArrayList<>();
 
@@ -174,8 +187,6 @@ public class DetailsActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(List<Review> reviews) {
-                System.out.println(reviewsContainer.getChildCount());
-
                 findViewById(R.id.showReviewsButton).setVisibility(View.INVISIBLE);
                 if (!reviews.isEmpty()) {
                     for(Review review: reviews){
@@ -186,7 +197,6 @@ public class DetailsActivity extends AppCompatActivity {
                         TextView commentTextView = reviewView.findViewById(R.id.commentTextView);
                         ImageView userPicture = reviewView.findViewById(R.id.userImageView);
                         RatingBar note = reviewView.findViewById(R.id.ratingBar);
-                        System.out.println(review.getUsername());
                         userNameTextView.setText(review.getUsername());
                         commentTextView.setText(review.getReview());
                         List<String> photos = review.getPhotos();
