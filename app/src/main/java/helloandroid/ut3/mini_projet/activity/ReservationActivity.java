@@ -135,7 +135,8 @@ public class ReservationActivity extends AppCompatActivity {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
             int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-
+            System.out.println(dayOfWeek);
+            System.out.println(horaires);
             switch (dayOfWeek) {
                 case Calendar.SUNDAY:
                     return horaires.containsKey("Dimanche");
