@@ -30,7 +30,7 @@
             android:name=".ConfirmReservation"
             android:exported="false" />
         <activity
-            android:name=".activity.ReservationActivity"
+            android:name=".activity.ReservationActivity" android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".activity.SplashActivity"
@@ -43,10 +43,10 @@
         </activity>
         <activity
             android:name=".activity.CameraActivity"
-            android:exported="false" />
+            android:exported="false" android:screenOrientation="portrait"/>
         <activity
             android:name=".activity.DisplayImageActivity"
-            android:exported="false" />
+            android:exported="false" android:screenOrientation="portrait"/>
         <activity
             android:name=".activity.DetailsActivity"
             android:exported="false" />
@@ -58,7 +58,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.ReviewActivity" />
+        <activity android:name=".activity.ReviewActivity"  android:screenOrientation="portrait" />
         <activity android:name=".activity.MapActivity" />
         <provider
             android:name="androidx.core.content.FileProvider"
