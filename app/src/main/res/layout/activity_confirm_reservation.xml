@@ -16,8 +16,10 @@
             android:id="@+id/confirmText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
             android:gravity="center"
-            android:text="TextView" />
+            android:text="TextView"
+            android:textSize="24sp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/homeButton"
