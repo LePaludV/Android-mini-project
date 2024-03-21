@@ -101,13 +101,11 @@ public class DetailsActivity extends AppCompatActivity {
                 Intent intent = new Intent(DetailsActivity.this, ReservationActivity.class);
 
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("Horaires", (Serializable) horaires);
+                bundle.putSerializable("Horaires", (Serializable) restaurant.getHoraires());
                 intent.putExtras(bundle);
-
                 startActivity(intent);
             }
         });
-
     findViewById(R.id.position).setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
