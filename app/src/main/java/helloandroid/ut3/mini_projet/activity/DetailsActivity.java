@@ -101,12 +101,8 @@ public class DetailsActivity extends AppCompatActivity {
                 Intent intent = new Intent(DetailsActivity.this, ReservationActivity.class);
 
                 Bundle bundle = new Bundle();
-                System.out.println("in details"+ horaires);
-                System.out.println(restaurant.getHoraires());
                 bundle.putSerializable("Horaires", (Serializable) restaurant.getHoraires());
                 intent.putExtras(bundle);
-                System.out.println();
-
                 startActivity(intent);
             }
         });
